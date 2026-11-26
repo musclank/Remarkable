@@ -21,6 +21,55 @@ const extractTokens = (payload) => {
   return payload?.tokens || payload?.data?.tokens || payload?.data || payload?.results || payload?.pools || [];
 };
 
+const isBase = value => {
+  const chain = String(value?.chainId || value?.chain || value?.network || value?.chainName || "").toLowerCase();
+  return chain === "base" || chain === "8453" || chain.includes("base mainnet");
+};
+
+const tokenAddress = item => String(item?.baseToken?.address || item?.tokenAddress || item?.address || item?.token?.address || item?.contractAddress || "").trim();
+
+const mergeBaseTokens = async (clankerTokens) => {
+  const baseClanker = clankerTokens.filter(item => isBase(item) || (!item?.chainId && !item?.chain && !item?.network));
+  const [boosts, profiles] = await Promise.all([
+    getJson("https://api.dexscreener.com/token-boosts/latest/v1").catch(() => []),
+    getJson("https://api.dexscreener.com/token-profiles/latest/v1").catch(() => [])
+  ]);
+  const discovery = [...(Array.isArray(boosts) ? boosts : []), ...(Array.isArray(profiles) ? profiles : [])]
+    .filter(item => isBase(item) && item?.tokenAddress);
+  const unique = new Map();
+  for (const item of discovery) {
+    const address = item.tokenAddress.toLowerCase();
+    if (!unique.has(address)) unique.set(address, item);
+  }
+  const discovered = [...unique.values()];
+  const basePairs = [];
+  for (let i = 0; i < discovered.length; i += 30) {
+    const batch = discovered.slice(i, i + 30);
+    const addresses = batch.map(item => item.tokenAddress).join(",");
+    const pairs = await getJson("https://api.dexscreener.com/tokens/v1/base/" + encodeURIComponent(addresses)).catch(() => []);
+    if (!Array.isArray(pairs)) continue;
+    for (const pair of pairs) {
+      if (String(pair?.chainId).toLowerCase() !== "base") continue;
+      const address = String(pair?.baseToken?.address || "").toLowerCase();
+      const meta = batch.find(item => item.tokenAddress.toLowerCase() === address);
+      if (meta) basePairs.push({ ...pair, description: meta.description || "", info: pair.info || { imageUrl: meta.icon }, profileUrl: meta.url, type: "Trending" });
+    }
+  }
+  const best = new Map();
+  for (const pair of basePairs) {
+    const address = String(pair?.baseToken?.address || "").toLowerCase();
+    if (!address) continue;
+    if (!best.has(address) || Number(pair.liquidity?.usd || 0) > Number(best.get(address).liquidity?.usd || 0)) best.set(address, pair);
+  }
+  const dexBase = [...best.values()].sort((a,b) => Number(b.volume?.h24 || 0) - Number(a.volume?.h24 || 0));
+  const clankerAddresses = new Set(baseClanker.map(tokenAddress).filter(Boolean).map(address => address.toLowerCase()));
+  const additionalBase = dexBase.filter(item => !clankerAddresses.has(String(item.baseToken?.address || "").toLowerCase()));
+  const prioritizedBase = [...baseClanker, ...additionalBase].slice(0, 12);
+  const prioritizedAddresses = new Set(prioritizedBase.map(tokenAddress).filter(Boolean).map(address => address.toLowerCase()));
+  const remaining = clankerTokens.filter(item => !prioritizedAddresses.has(tokenAddress(item).toLowerCase()));
+  return [...prioritizedBase, ...remaining].slice(0, 20);
+};
+
 export async function onRequest({ request }) {
   const origin = new URL(request.url).origin;
   let clankerError = "";
@@ -28,7 +77,8 @@ export async function onRequest({ request }) {
     const clanker = await getJson("https://www.clanker.world/api/tokens/trending");
     const tokens = extractTokens(clanker);
     if (Array.isArray(tokens) && tokens.length) {
-      return json({ source: "Clanker", tokens: tokens.slice(0, 20) }, 200, origin, "public, max-age=15, s-maxage=20");
+      const combined = await mergeBaseTokens(tokens).catch(() => tokens);
+      return json({ source: "Clanker + DexScreener Base", tokens: combined }, 200, origin, "public, max-age=15, s-maxage=20");
     }
     clankerError = "Clanker returned no token records";
   } catch (error) {
