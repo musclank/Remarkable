@@ -9,11 +9,25 @@ const money = value => {
   return '$' + n.toLocaleString(undefined, {maximumFractionDigits:2});
 };
 
+const pick = (...values) => values.find(v => v !== undefined && v !== null && v !== '');
+const imageUrl = value => {
+  if (value && typeof value === 'object') value = pick(value.url, value.imageUrl, value.src, value.uri);
+  if (typeof value !== 'string') return '';
+  const valueTrimmed = value.trim();
+  if (/^ipfs:\/\//i.test(valueTrimmed)) {
+    const path = valueTrimmed.replace(/^ipfs:\/\//i, '').replace(/^ipfs\//i, '');
+    return 'https://ipfs.io/ipfs/' + path;
+  }
+  if (valueTrimmed.startsWith('//')) return 'https:' + valueTrimmed;
+  if (/^https?:\/\//i.test(valueTrimmed) || /^data:image\//i.test(valueTrimmed)) return valueTrimmed;
+  return '';
+};
+
 export function normalizeMarketToken(raw, index = 0) {
   const token = raw.baseToken || raw.token || raw;
   const pool = raw.pool || raw;
+  const metadata = token.metadata || raw.metadata || raw.tokenMetadata || raw;
   const market = raw.marketData || raw.market || raw.stats || {};
-  const pick = (...values) => values.find(v => v !== undefined && v !== null && v !== '');
   const name = pick(token.name, raw.name, token.tokenName, raw.tokenName, token.symbol, raw.symbol, 'Unknown token');
   const symbol = String(pick(token.symbol, raw.symbol, raw.ticker, name)).replace(/^\$/, '').toUpperCase();
   const cap = pick(raw.marketCap, raw.market_cap, raw.fdv, token.marketCap, token.market_cap, pool.marketCap, pool.market_cap, market.marketCap, market.market_cap, market.fdv);
@@ -23,12 +37,17 @@ export function normalizeMarketToken(raw, index = 0) {
   const address = pick(token.address, token.tokenAddress, token.contractAddress, token.mint, raw.address, raw.tokenAddress, raw.contractAddress, raw.mint, pool.tokenAddress, pool.baseTokenAddress, '');
   const chain = String(pick(token.chain, raw.chain, token.network, raw.network, token.chainName, raw.chainName, token.chainId, raw.chainId, 'BASE')).toUpperCase();
   const color = raw.color || ['#b5ff6d','#a78bfa','#ffb8dc','#75d8ff','#ff9e68','#d4d7e3'][index % 6];
-  const icon = pick(token.icon, raw.icon, raw.info?.imageUrl, '✦');
+  const icon = imageUrl(pick(
+    token.imageUrl, token.image_url, token.logoURI, token.logoUri, token.logo, token.image,
+    raw.imageUrl, raw.image_url, raw.logoURI, raw.logoUri, raw.logo, raw.image,
+    token.info?.imageUrl, raw.info?.imageUrl, metadata.imageUrl, metadata.image_url,
+    metadata.logoURI, metadata.logo, metadata.image, raw.media?.image, raw.profile?.image
+  ));
   const changeNumber = Number(change);
   return {
     id:String(pick(raw.id, token.id, address, symbol + '-' + index)),
     name, symbol,
-    desc:pick(token.description, raw.description, raw.desc, 'Live onchain token market data.'),
+    desc:pick(token.description, raw.description, metadata.description, raw.desc, 'Live onchain token market data.'),
     chain:chain.includes('BASE') || chain === '8453' ? 'BASE' : chain,
     cap:money(cap), vol:money(volume),
     change:change === null || change === undefined || change === '' || !Number.isFinite(changeNumber) ? '—' : (changeNumber > 0 ? '+' : '') + changeNumber.toFixed(2) + '%',
@@ -47,7 +66,7 @@ export async function loadMarketTokens(endpoint = '/api/clanker/trending', signa
     throw new Error(message);
   }
   const payload = await response.json();
-  const list = Array.isArray(payload) ? payload : payload.tokens || payload.data || payload.results || payload.pools;
+  const list = Array.isArray(payload) ? payload : payload.tokens || payload.data?.tokens || payload.data || payload.results || payload.pools;
   if (!Array.isArray(list) || !list.length) throw new Error('No live market token records received');
   return {tokens:list.slice(0,20).map(normalizeMarketToken), live:true, source:payload.source || 'Clanker'};
 }
