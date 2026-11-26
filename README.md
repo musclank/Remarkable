@@ -35,12 +35,12 @@ The token explorer connects to Clanker's public Trending API. Wallet authenticat
 
 ## Clanker market feed
 
-The explorer fetches the top 10 records from Clanker's public Trending endpoint:
+The explorer fetches up to 20 records from Clanker's public Trending endpoint:
 
 `https://www.clanker.world/api/tokens/trending`
 
-No API key or Cloudflare environment variable is required. The page refreshes the feed every 30 seconds and falls back to clearly labeled sample records if the API request fails. The browser request requires Clanker's endpoint to allow CORS.
+No API key or Cloudflare environment variable is required. The page refreshes the feed every 30 seconds and shows an explicit unavailable state if the API request fails. The browser request requires Clanker's endpoint to allow CORS.
 
-`src/market.js` normalizes token metadata and market fields from the API response. The Live indicator means the endpoint responded successfully; it does not verify token safety, contract authenticity, or guarantee that every market field is present.
+`src/market.js` normalizes token metadata and market fields from the API response, including common image/logo fields and IPFS image URLs. Token artwork falls back to a symbol initial if an image is missing or fails to load. The Live indicator means the endpoint responded successfully; it does not verify token safety, contract authenticity, or guarantee that every market field is present.
 
 Official Clanker API documentation: https://github.com/clanker-devco/DOCS/blob/main/api-reference/public/README.md
