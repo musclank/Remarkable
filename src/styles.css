@@ -38,3 +38,13 @@
 .detail-warning{margin:14px 0;color:#7d8792;font-size:10px;line-height:1.7}
 .full-cta{width:100%}
 @media(max-width:640px){.chain-filter{flex:0 0 auto}.chain-filter select{font-size:10px}.token-modal{padding:24px 18px}.detail-heading h3{font-size:21px}.detail-metrics{gap:6px}.detail-metrics>div{padding:10px 8px}.detail-metrics strong{font-size:12px}.detail-metrics small{font-size:7px}.detail-chart svg{height:82px}}
+
+/* Remarkable mascot identity */
+.brand-mark{background:#111b25;border:1px solid #b5ff6d55;color:inherit;overflow:visible;box-shadow:inset 0 0 16px #b5ff6d12}
+.brand-mark .remarkable-mascot{width:27px;height:27px;display:block;filter:drop-shadow(0 0 5px #b5ff6d26)}
+.orb-core{background:transparent;box-shadow:none;overflow:visible;width:180px;height:180px;color:transparent;font-size:0;letter-spacing:0}
+.orb-core .hero-mascot{width:176px;height:176px;display:block;filter:drop-shadow(0 0 24px #b5ff6d35)}
+.hero-orb:has(.hero-mascot){background:radial-gradient(circle at 50% 50%,#17231b 0,#101820 36%,#0a0f17 63%,transparent 70%)}
+footer .brand-mark .remarkable-mascot{width:27px;height:27px}
+@media(max-width:900px){.orb-core{width:150px;height:150px}.orb-core .hero-mascot{width:148px;height:148px}}
+@media(max-width:640px){.orb-core{width:132px;height:132px}.orb-core .hero-mascot{width:130px;height:130px}}
