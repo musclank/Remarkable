@@ -126,3 +126,14 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 .ambient-background{--pointer-x:0px;--pointer-y:0px}
 @media(max-width:640px){.ambient-pointer-glow{opacity:.22;transform:none!important;will-change:auto}}
 @media(prefers-reduced-motion:reduce){.ambient-pointer-glow{display:none}}
+
+/* Market controls: sorting and manual refresh */
+.sort-filter{height:38px;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:0 11px;color:#b4bac3;position:relative}
+.sort-filter select{appearance:none;background:transparent;border:0;outline:0;color:inherit;font-size:11px;padding-right:13px;cursor:pointer}
+.sort-filter select option{background:#101720;color:#f4f4f2}
+.refresh-btn{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;background:transparent;color:#aeb6c0;flex:none}
+.refresh-btn:hover:not(:disabled){border-color:var(--acid);color:var(--acid)}
+.refresh-btn:disabled{opacity:.55;cursor:wait}
+.refresh-btn.refreshing svg{animation:refresh-spin .8s linear infinite}
+@keyframes refresh-spin{to{transform:rotate(360deg)}}
+@media(max-width:640px){.sort-filter{flex:1;min-width:0}.sort-filter select{font-size:10px;width:100%}.refresh-btn{flex:none}}
