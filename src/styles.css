@@ -185,3 +185,64 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 .trade-buy b,.trade-sell b{font-size:15px;color:#edf2f5;font-variant-numeric:tabular-nums}
 .dex-trade-stats>p{grid-column:1/-1;margin:0;color:#75818d;font-size:9px;line-height:1.5}
 @media(max-width:420px){.dex-trade-stats{gap:7px}.trade-period{padding:10px}.trade-period>div{gap:5px}.trade-buy,.trade-sell{font-size:9px}}
+
+
+/* Token launch wizard */
+.launch-backdrop{z-index:120;align-items:center;padding:18px}
+.launch-modal{width:min(100%,620px);max-height:min(92vh,900px);overflow:auto;padding:30px;background:linear-gradient(145deg,#111923f5,#080d14f7);border:1px solid rgba(181,255,109,.2);box-shadow:0 30px 100px #000b,0 0 45px #b5ff6d0a}
+.launch-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 22px;color:#84919d;font-size:9px;font-weight:800;letter-spacing:.15em}
+.launch-network{display:flex;align-items:center;gap:7px;color:#b5ff6d}
+.launch-heading{display:flex;align-items:center;gap:15px;margin-bottom:22px}
+.launch-heading .modal-icon{width:48px;height:48px;flex:none;margin:0;border-radius:14px}
+.launch-heading .modal-icon img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.launch-heading h3{margin:0;font-size:clamp(23px,5vw,32px);letter-spacing:-.05em;line-height:1.1}
+.launch-heading h3 em{color:var(--acid,#b5ff6d);font-style:normal}
+.launch-heading p{margin:7px 0 0;color:#8d99a5;font-size:12px}
+.launch-form{display:grid;gap:15px}
+.launch-upload{position:relative;min-height:122px;display:flex;align-items:center;justify-content:center;gap:16px;padding:16px;border:1px dashed #b5ff6d4a;border-radius:14px;background:#b5ff6d06;cursor:pointer;overflow:hidden}
+.launch-upload>input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.launch-upload>img{width:78px;height:78px;object-fit:cover;border-radius:16px;border:1px solid #ffffff20}
+.launch-upload-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;color:#b5ff6d}
+.launch-upload-placeholder strong{font-size:12px;color:#e9edf0}
+.launch-upload-placeholder small{font-size:10px;color:#83909c}
+.upload-edit{position:absolute;right:12px;bottom:12px;padding:7px 9px;border-radius:7px;background:#111923;color:#b5ff6d;font-size:10px;font-weight:700}
+.launch-file-name{margin-top:-10px;color:#81909c;font-size:10px;overflow-wrap:anywhere}
+.launch-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.launch-fields>label,.launch-field{position:relative;display:flex;flex-direction:column;gap:8px;min-width:0}
+.launch-fields>label>span,.launch-field>span{display:flex;align-items:center;gap:8px;color:#b9c2cb;font-size:11px;font-weight:700}
+.launch-fields label small,.launch-field span small{color:#6d7a87;font-size:8px;letter-spacing:.12em;font-weight:700}
+.launch-fields input,.launch-field textarea{width:100%;min-width:0;border:1px solid #ffffff16;border-radius:9px;background:#060b11;color:#eef3f6;padding:12px;font:inherit;font-size:12px;outline:none}
+.launch-fields input:focus,.launch-field textarea:focus{border-color:#b5ff6d70;box-shadow:0 0 0 3px #b5ff6d0c}
+.launch-fields input::placeholder,.launch-field textarea::placeholder{color:#53616d}
+.launch-fields label>small{position:absolute;right:10px;bottom:12px;color:#65717d;font-size:9px}
+.launch-field textarea{resize:vertical;min-height:76px;line-height:1.5}
+.launch-wallet-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid #ffffff12;border-radius:12px;background:#ffffff03}
+.launch-wallet-row>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.launch-wallet-row small{color:#778591;font-size:8px;letter-spacing:.14em;font-weight:800}
+.launch-wallet-row strong{color:#e9eff3;font-size:13px;font-weight:700}
+.launch-wallet-row span{color:#8a97a3;font-size:10px}
+.launch-connect{display:flex;align-items:center;justify-content:center;gap:7px;flex:none;padding:10px 12px;border:1px solid #b5ff6d42;border-radius:8px;background:#b5ff6d0b;color:#b5ff6d;font-size:10px;font-weight:800}
+.launch-connect:disabled{opacity:.6}
+.launch-disclaimer{color:#75828e;font-size:10px;line-height:1.65}
+.launch-next{width:100%;justify-content:center;min-height:48px}
+.launch-error{padding:11px 12px;border:1px solid #ff777738;border-radius:9px;background:#ff77770a;color:#ff9a9a;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.launch-review-card{padding:16px;border:1px solid #ffffff14;border-radius:14px;background:#ffffff03}
+.launch-token-preview{display:flex;align-items:center;gap:12px}
+.launch-token-preview>img{width:54px;height:54px;object-fit:cover;border-radius:13px}
+.launch-token-preview>div{display:flex;flex-direction:column;gap:5px}
+.launch-token-preview strong{font-size:18px;color:#f0f4f7}
+.launch-token-preview span{color:#b5ff6d;font-size:11px;font-weight:800}
+.launch-review-card>p{margin:14px 0;color:#98a4af;font-size:12px;line-height:1.6}
+.launch-review-card dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0;padding-top:14px;border-top:1px solid #ffffff10}
+.launch-review-card dl>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.launch-review-card dt{color:#75828e;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.launch-review-card dd{margin:0;color:#e5ebef;font-size:11px;font-weight:700;overflow-wrap:anywhere}
+.launch-review-card>a{display:inline-flex;align-items:center;gap:5px;margin:14px 12px 0 0;color:#b5ff6d;font-size:10px}
+.launch-review-note{margin:14px 0;color:#85929e;font-size:10px;line-height:1.65}
+.launch-review-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.launch-review-actions .primary-cta{justify-content:center;flex:1;min-height:45px;font-size:11px}
+.launch-back,.launch-copy{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #ffffff15;border-radius:8px;background:#ffffff04;color:#aeb9c3;padding:11px 12px;font-size:10px;font-weight:700}
+.launch-copy{margin-top:12px;border:0;padding:8px 0;color:#7d8a96;background:transparent}
+.spin{animation:refresh-spin .8s linear infinite}
+@media(max-width:560px){.launch-backdrop{padding:8px;align-items:flex-end}.launch-modal{width:100%;max-height:94dvh;padding:22px 17px 18px;border-radius:20px 20px 12px 12px}.launch-topline{margin-bottom:18px}.launch-fields{gap:9px}.launch-wallet-row{align-items:flex-start;flex-direction:column}.launch-connect{width:100%}.launch-review-actions{align-items:stretch;flex-direction:column-reverse}.launch-review-actions .primary-cta,.launch-back{width:100%}}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}}
