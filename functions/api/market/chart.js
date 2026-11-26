@@ -10,12 +10,40 @@ const NETWORKS = {
 };
 
 const getJson = async url => {
+  const cache = caches.default;
+  const key = new Request(url, { method: "GET" });
+  const cached = await cache.match(key);
+  const storedAt = Number(cached?.headers.get("x-remarkable-cached-at") || 0);
+  const ageMs = storedAt ? Date.now() - storedAt : Infinity;
+
+  // Serve very recent edge data without hitting GeckoTerminal again.
+  if (cached && ageMs < 90_000) return cached.clone().json();
+
   const response = await fetch(url, {
-    headers: { Accept: "application/json;version=20230302", "User-Agent": "Remarkable-Token-Chart/1.0" },
-    cf: { cacheTtl: 45, cacheEverything: true }
+    headers: { Accept: "application/json;version=20230302", "User-Agent": "Remarkable-Token-Chart/1.0" }
   });
-  if (!response.ok) throw new Error("GeckoTerminal HTTP " + response.status);
-  return response.json();
+
+  if (response.ok) {
+    const payload = await response.clone().json();
+    const cacheResponse = new Response(JSON.stringify(payload), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "public, max-age=900",
+        "x-remarkable-cached-at": String(Date.now())
+      }
+    });
+    await cache.put(key, cacheResponse);
+    return payload;
+  }
+
+  // If the provider rate-limits this request, serve the last known successful
+  // response for up to 15 minutes rather than breaking the chart.
+  if (response.status === 429 && cached && ageMs < 15 * 60_000) {
+    return cached.clone().json();
+  }
+  if (response.status === 429) throw new Error("GeckoTerminal rate limit (429). Please wait a minute and retry.");
+  throw new Error("GeckoTerminal HTTP " + response.status);
 };
 
 const relationAddress = value => String(value || "").replace(/^[^_]+_/, "").toLowerCase();
@@ -58,6 +86,12 @@ export async function onRequest({ request }) {
       candles: candles.map(c => ({ time: c[0], open: c[1], high: c[2], low: c[3], close: c[4], volume: c[5] })).reverse()
     });
   } catch (error) {
-    return json({ error: "Unable to load onchain price history", detail: String(error?.message || error) }, 502, "no-store");
+    const message = String(error?.message || error);
+    const limited = message.includes("429") || message.toLowerCase().includes("rate limit");
+    return json(
+      { error: limited ? "Price provider is temporarily rate-limited" : "Unable to load onchain price history", detail: message },
+      limited ? 429 : 502,
+      limited ? "public, max-age=30, s-maxage=60" : "no-store"
+    );
   }
 }
