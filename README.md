@@ -46,8 +46,8 @@ No API key or Cloudflare environment variable is required. The page refreshes th
 Official Clanker API documentation: https://github.com/clanker-devco/DOCS/blob/main/api-reference/public/README.md
 
 
-## Live token price history
+## Live token price
 
-The token detail modal now requests OHLCV candles from the Cloudflare Pages Function at `/api/market/chart`. The function resolves the token's highest-liquidity indexed pool and requests price candles from GeckoTerminal. Supported chart networks are Base, Solana and Ethereum. Time ranges are 1 day, 1 week and 1 month. The public GeckoTerminal API is rate-limited and its data may be delayed or unavailable for very new or illiquid tokens; the chart displays an unavailable message rather than fabricated price history.
+The token detail modal requests current USD token price and 24-hour change from DexScreener through the Cloudflare Pages Function at `/api/market/chart`. The function selects the highest-liquidity matching pair on Base, Solana or Ethereum and also displays available liquidity and 24-hour volume. This view intentionally shows a live quote rather than OHLCV history because DexScreener's public token API provides pair market data, not a public candle-history endpoint. Quotes may be delayed or unavailable for newly listed tokens.
 
-The chart requires Cloudflare Pages Functions to be enabled for this project. No API key or environment variable is required for GeckoTerminal's public endpoint.
+No API key or environment variable is required for DexScreener's public endpoint.
