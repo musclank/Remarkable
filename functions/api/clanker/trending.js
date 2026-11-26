@@ -31,7 +31,8 @@ const fetchBaseDexTokens = async () => {
   }
   return [...best.values()].sort((a, b) => Number(b.volume?.h24 || 0) - Number(a.volume?.h24 || 0)).slice(0, 20);
 };
-\nconst json = (data, status, origin, cache = "no-store") => new Response(JSON.stringify(data), {
+
+const json = (data, status, origin, cache = "no-store") => new Response(JSON.stringify(data), {
   status,
   headers: {
     "Content-Type": "application/json; charset=utf-8",
@@ -103,7 +104,16 @@ const mergeBaseTokens = async (clankerTokens) => {
   return [...prioritizedBase, ...remaining].slice(0, 20);
 };
 
-export async function onRequest({ request }) {\n  const url = new URL(request.url);\n  if (url.searchParams.get("chain")?.toUpperCase() === "BASE") {\n    try {\n      const tokens = await fetchBaseDexTokens();\n      return json({ source: "DexScreener Base", tokens }, 200, url.origin, "public, max-age=15, s-maxage=20");\n    } catch (error) {\n      return json({ error: "Unable to load Base token feed", detail: String(error?.message || error) }, 502, url.origin);\n    }\n  }
+export async function onRequest({ request }) {
+  const url = new URL(request.url);
+  if (url.searchParams.get("chain")?.toUpperCase() === "BASE") {
+    try {
+      const tokens = await fetchBaseDexTokens();
+      return json({ source: "DexScreener Base", tokens }, 200, url.origin, "public, max-age=15, s-maxage=20");
+    } catch (error) {
+      return json({ error: "Unable to load Base token feed", detail: String(error?.message || error) }, 502, url.origin);
+    }
+  }
   const origin = new URL(request.url).origin;
   let clankerError = "";
   try {
