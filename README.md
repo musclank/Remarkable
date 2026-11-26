@@ -15,7 +15,7 @@ Run `npm run build` to generate the production site in `dist`.
 - Root directory: `/`
 - Production branch: `main`
 
-Connect the Pages production branch to `main) so new commits deploy automatically.
+Connect the Pages production branch to `main` so new commits deploy automatically.
 
 ## Current prototype
 - Responsive desktop and mobile layout
