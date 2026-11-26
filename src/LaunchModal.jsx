@@ -2,7 +2,7 @@ import React,{useEffect,useState} from 'react';
 import {ArrowLeft,ArrowUpRight,Check,ImagePlus,LoaderCircle,Wallet,X,ExternalLink} from 'lucide-react';
 
 const BASE_CHAIN='0x2105';
-const CLANKER_URL='https://www.clanker.world/';
+const CLANKER_URL='https://www.clanker.world/deploy';
 const shortAddress=value=>value?value.slice(0,6)+'…'+value.slice(-4):'';
 
 export default function LaunchModal({onClose}){
@@ -62,8 +62,8 @@ export default function LaunchModal({onClose}){
   const chooseImage=event=>{
     const file=event.target.files?.[0];
     if(!file)return;
-    if(!/^image\/(png|jpeg|webp)$/i.test(file.type)){setError('Use a PNG, JPG or WebP image.');return}
-    if(file.size>2*1024*1024){setError('Image must be 2 MB or smaller.');return}
+    if(!/^image\/(png|jpeg)$/i.test(file.type)){setError('Use a PNG or JPG image.');return}
+    if(file.size>1024*1024){setError('Image must be 1 MB or smaller.');return}
     const reader=new FileReader();
     reader.onload=()=>{setImage(String(reader.result||''));setImageName(file.name);setError('')};
     reader.onerror=()=>setError('Could not read this image file.');
@@ -71,8 +71,8 @@ export default function LaunchModal({onClose}){
   };
 
   const validate=()=>{
-    if(name.trim().length<2||name.trim().length>32)return 'Token name must be 2–32 characters.';
-    if(!/^[a-zA-Z0-9]{2,10}$/.test(symbol.trim()))return 'Ticker must be 2–10 letters or numbers.';
+    if(name.trim().length<2||name.trim().length>50)return 'Token name must be 2–50 characters.';
+    if(!/^[a-zA-Z0-9]{2,25}$/.test(symbol.trim()))return 'Ticker must be 2–25 letters or numbers.';
     if(!image)return 'Add a token logo before reviewing the launch.';
     if(!baseConnected)return 'Connect a wallet on Base mainnet first.';
     return '';
@@ -87,9 +87,9 @@ export default function LaunchModal({onClose}){
     {step==='edit'?<>
       <div className="launch-heading"><div className="modal-icon"><ImagePlus size={22}/></div><div><h3 id="launch-title">Make it <em>remarkable.</em></h3><p>Prepare your token details before deploying.</p></div></div>
       <form className="launch-form" onSubmit={review}>
-        <label className="launch-upload"><input type="file" accept="image/png,image/jpeg,image/webp" onChange={chooseImage}/>{image?<img src={image} alt="Token logo preview"/>:<span className="launch-upload-placeholder"><ImagePlus size={22}/><strong>Upload token logo</strong><small>PNG, JPG or WebP · max 2 MB</small></span>}<span className="upload-edit">{image?'Change image':'Choose image'}</span></label>
+        <label className="launch-upload"><input type="file" accept="image/png,image/jpeg" onChange={chooseImage}/>{image?<img src={image} alt="Token logo preview"/>:<span className="launch-upload-placeholder"><ImagePlus size={22}/><strong>Upload token logo</strong><small>PNG or JPG · max 1 MB</small></span>}<span className="upload-edit">{image?'Change image':'Choose image'}</span></label>
         {imageName&&<div className="launch-file-name">{imageName}</div>}
-        <div className="launch-fields"><label><span>Token name</span><input value={name} onChange={e=>setName(e.target.value)} maxLength={32} placeholder="e.g. Remarkable" required/><small>{name.length}/32</small></label><label><span>Ticker</span><input value={symbol} onChange={e=>setSymbol(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''))} maxLength={10} placeholder="e.g. RMK" required/><small>{symbol.length}/10</small></label></div>
+        <div className="launch-fields"><label><span>Token name</span><input value={name} onChange={e=>setName(e.target.value)} maxLength={50} placeholder="e.g. Remarkable" required/><small>{name.length}/50</small></label><label><span>Ticker</span><input value={symbol} onChange={e=>setSymbol(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''))} maxLength={25} placeholder="e.g. RMK" required/><small>{symbol.length}/25</small></label></div>
         <label className="launch-field"><span>Description <small>OPTIONAL</small></span><textarea value={description} onChange={e=>setDescription(e.target.value)} maxLength={500} rows={3} placeholder="What is your token about?"/></label>
         <div className="launch-fields"><label><span>Website <small>OPTIONAL</small></span><input type="url" value={website} onChange={e=>setWebsite(e.target.value)} placeholder="https://"/></label><label><span>X / social link <small>OPTIONAL</small></span><input type="url" value={social} onChange={e=>setSocial(e.target.value)} placeholder="https://x.com/"/></label></div>
         <div className="launch-wallet-row"><div><small>DEPLOY WALLET</small><strong>{wallet?shortAddress(wallet):'Not connected'}</strong><span>{wallet?(baseConnected?'Connected · Base mainnet':'Connected · switch to Base'):'Connect to continue'}</span></div><button type="button" className="launch-connect" onClick={connect} disabled={connecting}>{connecting?<LoaderCircle size={15} className="spin"/>:<Wallet size={15}/>} {connecting?'Connecting':wallet?(baseConnected?'Base connected':'Switch network'):'Connect wallet'}</button></div>
@@ -100,7 +100,7 @@ export default function LaunchModal({onClose}){
     </>:<>
       <div className="launch-heading"><div className="modal-icon">{image?<img src={image} alt="" />:<ImagePlus size={22}/>}</div><div><h3 id="launch-title">Review your <em>token.</em></h3><p>Check the details before continuing.</p></div></div>
       <div className="launch-review-card"><div className="launch-token-preview">{image&&<img src={image} alt=""/>}<div><strong>{name}</strong><span>${symbol.toUpperCase()}</span></div></div><p>{description||'No description added.'}</p><dl><div><dt>Network</dt><dd>Base mainnet</dd></div><div><dt>Wallet</dt><dd>{shortAddress(wallet)}</dd></div><div><dt>Supply</dt><dd>1,000,000,000</dd></div><div><dt>Launch protocol</dt><dd>Clanker v5</dd></div></dl>{website&&<a href={website} target="_blank" rel="noreferrer"><ExternalLink size={13}/> Website</a>}{social&&<a href={social} target="_blank" rel="noreferrer"><ExternalLink size={13}/> Social</a>}</div>
-      <div className="launch-review-note">Your token has not been deployed yet. Clanker will show the live launch settings, fees and wallet transaction for final approval.</div>
+      <div className="launch-review-note">Your token has not been deployed yet. Clanker will show the current settings and wallet transaction for approval. Details and logo are not automatically transferred; copy your details and upload the logo again on Clanker.</div>
       {error&&<div className="launch-error" role="alert">{error}</div>}
       <div className="launch-review-actions"><button className="launch-back" onClick={()=>{setStep('edit');setError('')}}><ArrowLeft size={15}/> Edit details</button><button className="primary-cta" onClick={()=>window.open(CLANKER_URL,'_blank','noopener,noreferrer')}>Continue to Clanker <ArrowUpRight size={16}/></button></div>
       <button className="launch-copy" onClick={copyDetails}>{copied?<Check size={14}/>:null}{copied?'Details copied':'Copy token details'}</button>
