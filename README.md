@@ -31,11 +31,11 @@ The R lettermark has been replaced with an original vector mascot: a small lumin
 - Wallet and launch-token preview dialogs
 
 ## Important
-The token explorer connects to Clanker's public Trending API. Wallet authentication, token creation, trading and backend persistence are not connected. Market data can be delayed or incomplete; verify token details and contract addresses independently before trading.
+The token explorer combines Clanker's public Trending API with DexScreener's latest Base token profiles and boost feed. The merged feed prioritizes Base token records while retaining other Clanker trending tokens, so Base assets are not crowded out by tokens on other networks. Wallet authentication, token creation, trading and backend persistence are not connected. Market data can be delayed or incomplete; verify token details and contract addresses independently before trading.
 
 ## Clanker market feed
 
-The explorer fetches up to 20 records from Clanker's public Trending endpoint:
+The explorer fetches Clanker trending records and enriches the list with Base tokens found through DexScreener's latest boosts and token profiles, then returns up to 20 combined records:
 
 `https://www.clanker.world/api/tokens/trending`
 
