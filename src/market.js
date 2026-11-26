@@ -1,12 +1,3 @@
-export const demoTokens = [
-  {id:'1',name:'MOLT',symbol:'MOLT',desc:'The internet is evolving. So are we.',chain:'SOLANA',cap:'$4.8M',vol:'$812K',change:'+24.8%',color:'#b5ff6d',icon:'🐚',type:'Trending',address:'Demo address · not onchain'},
-  {id:'2',name:'VOID CLUB',symbol:'VOID',desc:'A little darkness never hurt.',chain:'SOLANA',cap:'$1.3M',vol:'$428K',change:'+18.2%',color:'#a78bfa',icon:'◉',type:'New',address:'Demo address · not onchain'},
-  {id:'3',name:'PEARL',symbol:'PRL',desc:'Find your rare thing.',chain:'BASE',cap:'$12.8M',vol:'$1.1M',change:'+12.6%',color:'#ffb8dc',icon:'✦',type:'Trending',address:'Demo address · not onchain'},
-  {id:'4',name:'DEGEN DOLPHIN',symbol:'DDOL',desc:'Born to swim against the tide.',chain:'SOLANA',cap:'$720K',vol:'$205K',change:'+9.4%',color:'#75d8ff',icon:'🐬',type:'New',address:'Demo address · not onchain'},
-  {id:'5',name:'SLOWBURN',symbol:'SLOW',desc:'Good things take time.',chain:'BASE',cap:'$8.1M',vol:'$640K',change:'+7.1%',color:'#ff9e68',icon:'☼',type:'Trending',address:'Demo address · not onchain'},
-  {id:'6',name:'LIL GHOST',symbol:'GHOST',desc:'Here, but not really.',chain:'SOLANA',cap:'$910K',vol:'$188K',change:'+5.7%',color:'#d4d7e3',icon:'♧',type:'New',address:'Demo address · not onchain'}
-];
-
 const money = value => {
   if (value === null || value === undefined || value === '') return '—';
   if (typeof value === 'string' && value.includes('$')) return value;
@@ -34,8 +25,7 @@ export function normalizeMarketToken(raw, index = 0) {
   const color = raw.color || ['#b5ff6d','#a78bfa','#ffb8dc','#75d8ff','#ff9e68','#d4d7e3'][index % 6];
   return { id:String(pick(raw.id, token.id, address, symbol + '-' + index)), name, symbol, desc:pick(token.description, raw.description, raw.desc, 'Clanker token · onchain culture, moving in real time.'), chain:chain.includes('BASE') || chain === '8453' ? 'BASE' : chain, cap:money(cap), vol:money(volume), change:change === null || change === undefined ? '—' : (Number(change) > 0 ? '+' : '') + Number(change).toFixed(2) + '%', color, icon:pick(token.icon, raw.icon, '✦'), type:pick(raw.type, raw.category, 'Trending'), address:address || 'Address not supplied by Clanker API', raw };
 }
-export async function loadMarketTokens(endpoint = 'https://www.clanker.world/api/tokens/trending', signal) {
-  if (!endpoint) return {tokens:demoTokens, live:false};
+export async function loadMarketTokens(endpoint = '/api/clanker/trending', signal) {
   const response = await fetch(endpoint, {signal, headers:{Accept:'application/json'}});
   if (!response.ok) throw new Error('Clanker API responded with ' + response.status);
   const payload = await response.json();
