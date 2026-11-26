@@ -38,9 +38,9 @@ export function normalizeMarketToken(raw, index = 0) {
   const chain = String(pick(token.chain, raw.chain, token.network, raw.network, token.chainName, raw.chainName, token.chainId, raw.chainId, 'BASE')).toUpperCase();
   const color = raw.color || ['#b5ff6d','#a78bfa','#ffb8dc','#75d8ff','#ff9e68','#d4d7e3'][index % 6];
   const icon = imageUrl(pick(
-    token.imageUrl, token.image_url, token.logoURI, token.logoUri, token.logo, token.image,
-    raw.imageUrl, raw.image_url, raw.logoURI, raw.logoUri, raw.logo, raw.image,
-    token.info?.imageUrl, raw.info?.imageUrl, metadata.imageUrl, metadata.image_url,
+    token.imageUrl, token.image_url, token.logoUrl, token.logo_url, token.logoURI, token.logoUri, token.logo, token.image, token.tokenImage, token.token_image,
+    raw.imageUrl, raw.image_url, raw.logoUrl, raw.logo_url, raw.imgUrl, raw.img_url, raw.logoURI, raw.logoUri, raw.logo, raw.image,
+    token.info?.imageUrl, raw.info?.imageUrl, token.meta?.image, raw.tokenInfo?.image, metadata.imageUrl, metadata.image_url,
     metadata.logoURI, metadata.logo, metadata.image, raw.media?.image, raw.profile?.image
   ));
   const changeNumber = Number(change);
