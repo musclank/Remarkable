@@ -137,3 +137,5 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 .refresh-btn.refreshing svg{animation:refresh-spin .8s linear infinite}
 @keyframes refresh-spin{to{transform:rotate(360deg)}}
 @media(max-width:640px){.sort-filter{flex:1;min-width:0}.sort-filter select{font-size:10px;width:100%}.refresh-btn{flex:none}}
+
+.explorer-link{display:inline-flex;align-items:center;gap:8px;margin:11px 0 0 2px;color:var(--acid);font-size:10px;font-weight:700}.explorer-link:hover{text-decoration:underline}
