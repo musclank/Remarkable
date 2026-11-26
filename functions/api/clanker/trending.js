@@ -62,7 +62,7 @@ export async function onRequest({ request }) {
         if (!Array.isArray(result)) continue;
         for (const pair of result) {
           const address = pair?.baseToken?.address?.toLowerCase();
-          const metadata = batch.find(item => item.tokenAddress.toLowerCase() === address);
+          const metadata = batch.find(item => item.tokenAddress?.toLowerCase() === address);
           if (metadata) pairs.push({ ...pair, description: metadata.description || "", info: pair.info || { imageUrl: metadata.icon }, profileUrl: metadata.url, type: "Trending" });
         }
       }
