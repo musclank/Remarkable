@@ -118,3 +118,11 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 @keyframes scan-down{0%{top:-20%;opacity:0}15%{opacity:.65}85%{opacity:.25}100%{top:110%;opacity:0}}
 @media(max-width:640px){.ambient-grid{inset:20% -35% -8%;background-size:48px 48px;opacity:.09}.ambient-glow{filter:blur(48px);width:90vw}.glow-one{left:-48%}.glow-two{right:-52%}.ambient-background::before{background-size:145px 145px;opacity:.22}.energy-stream{width:90vw}}
 @media(prefers-reduced-motion:reduce){.ambient-background::before,.ambient-background::after,.ambient-grid,.ambient-glow,.ambient-stars,.energy-stream,.ambient-scan{animation:none!important}.ambient-background::before,.ambient-background::after{transform:none}}
+
+
+/* Subtle pointer-reactive parallax layer */
+.ambient-pointer-glow{position:absolute;inset:-12%;opacity:.55;background:radial-gradient(ellipse at 50% 50%,#b5ff6d0b 0%,#7ce8e40a 24%,transparent 58%);transform:translate3d(var(--pointer-x,0px),var(--pointer-y,0px),0);transition:transform .28s ease-out;will-change:transform}
+.ambient-grid{background-position:0 0,0 0;transition:opacity .4s ease}
+.ambient-background{--pointer-x:0px;--pointer-y:0px}
+@media(max-width:640px){.ambient-pointer-glow{opacity:.22;transform:none!important;will-change:auto}}
+@media(prefers-reduced-motion:reduce){.ambient-pointer-glow{display:none}}
