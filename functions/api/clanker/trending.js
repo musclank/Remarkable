@@ -127,7 +127,8 @@ export async function onRequest({ request }) {
   if (url.searchParams.get("chain")?.toUpperCase() === "BASE") {
     try {
       const tokens = await fetchBaseDexTokens();
-      if (!tokens.length) return json({ error: "No Base tokens were returned by Clanker or DexScreener", detail: "The live providers returned no Base token pairs. Try again shortly." }, 502, url.origin);\n      return json({ source: "Clanker + DexScreener Base", tokens }, 200, url.origin, "public, max-age=15, s-maxage=20");
+      if (!tokens.length) return json({ error: "No Base tokens were returned by Clanker or DexScreener", detail: "The live providers returned no Base token pairs. Try again shortly." }, 502, url.origin);
+      return json({ source: "Clanker + DexScreener Base", tokens }, 200, url.origin, "public, max-age=15, s-maxage=20");
     } catch (error) {
       return json({ error: "Unable to load Base token feed", detail: String(error?.message || error) }, 502, url.origin);
     }
