@@ -1,15 +1,23 @@
 
 const fetchBaseDexTokens = async () => {
-  const [boosts, profiles] = await Promise.all([
+  const [boosts, profiles, clanker, searchResults] = await Promise.all([
     getJson("https://api.dexscreener.com/token-boosts/latest/v1").catch(() => []),
-    getJson("https://api.dexscreener.com/token-profiles/latest/v1").catch(() => [])
+    getJson("https://api.dexscreener.com/token-profiles/latest/v1").catch(() => []),
+    getJson("https://www.clanker.world/api/tokens/trending").catch(() => null),
+    Promise.all(["base","clanker","degen","higher"].map(q =>
+      getJson("https://api.dexscreener.com/latest/dex/search?q=" + encodeURIComponent(q)).catch(() => null)
+    ))
   ]);
-  const found = [...(Array.isArray(boosts) ? boosts : []), ...(Array.isArray(profiles) ? profiles : [])]
+
+  const clankerItems = extractTokens(clanker);
+  const discovered = [...(Array.isArray(boosts) ? boosts : []), ...(Array.isArray(profiles) ? profiles : [])]
     .filter(item => isBase(item) && item?.tokenAddress);
   const unique = new Map();
-  for (const item of found) unique.set(String(item.tokenAddress).toLowerCase(), item);
+  for (const item of discovered) unique.set(String(item.tokenAddress).toLowerCase(), item);
+
+  const pairs = searchResults.flatMap(result => Array.isArray(result?.pairs) ? result.pairs : [])
+    .filter(pair => String(pair?.chainId).toLowerCase() === "base");
   const metadata = [...unique.values()];
-  const pairs = [];
   for (let i = 0; i < metadata.length; i += 25) {
     const batch = metadata.slice(i, i + 25);
     const addresses = batch.map(item => item.tokenAddress).join(",");
@@ -22,14 +30,24 @@ const fetchBaseDexTokens = async () => {
       if (meta) pairs.push({ ...pair, chain: "BASE", chainId: "base", description: meta.description || "", info: pair.info || { imageUrl: meta.icon }, type: "Trending" });
     }
   }
+
   const best = new Map();
   for (const pair of pairs) {
-    const address = String(pair.baseToken?.address || "").toLowerCase();
+    const address = String(pair?.baseToken?.address || "").toLowerCase();
     if (!address) continue;
     const current = best.get(address);
     if (!current || Number(pair.liquidity?.usd || 0) > Number(current.liquidity?.usd || 0)) best.set(address, pair);
   }
-  return [...best.values()].sort((a, b) => Number(b.volume?.h24 || 0) - Number(a.volume?.h24 || 0)).slice(0, 20);
+  const dexTokens = [...best.values()].map(pair => ({ ...pair, chain: "BASE", chainId: "base" }));
+  const clankerBase = clankerItems.filter(item => isBase(item)).map(item => ({ ...item, chain: "BASE", chainId: "base" }));
+  const merged = new Map();
+  for (const item of [...clankerBase, ...dexTokens]) {
+    const address = String(item?.baseToken?.address || item?.tokenAddress || item?.address || "").toLowerCase();
+    if (address) merged.set(address, item);
+  }
+  return [...merged.values()]
+    .sort((a, b) => Number(b.volume?.h24 || b.volume24h || 0) - Number(a.volume?.h24 || a.volume24h || 0))
+    .slice(0, 20);
 };
 
 const json = (data, status, origin, cache = "no-store") => new Response(JSON.stringify(data), {
@@ -109,7 +127,7 @@ export async function onRequest({ request }) {
   if (url.searchParams.get("chain")?.toUpperCase() === "BASE") {
     try {
       const tokens = await fetchBaseDexTokens();
-      return json({ source: "DexScreener Base", tokens }, 200, url.origin, "public, max-age=15, s-maxage=20");
+      if (!tokens.length) return json({ error: "No Base tokens were returned by Clanker or DexScreener", detail: "The live providers returned no Base token pairs. Try again shortly." }, 502, url.origin);\n      return json({ source: "Clanker + DexScreener Base", tokens }, 200, url.origin, "public, max-age=15, s-maxage=20");
     } catch (error) {
       return json({ error: "Unable to load Base token feed", detail: String(error?.message || error) }, 502, url.origin);
     }
