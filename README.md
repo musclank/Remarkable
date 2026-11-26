@@ -17,7 +17,7 @@ Run `npm run build` to generate the production site in `dist`.
 
 Connect the Pages production branch to `main` so new commits deploy automatically.
 
-## Current prototype
+## Brand identity\nThe R lettermark has been replaced with an original vector mascot: a small luminous onchain creature with a dark face, cyan eyes and acid-green body. The SVG is embedded in the React UI and scales for the header, footer and hero artwork.\n\n## Current prototype
 - Responsive desktop and mobile layout
 - Animated hero and orbit artwork
 - Trending, New and Watchlist explorer tabs
