@@ -48,3 +48,42 @@
 footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 @media(max-width:900px){.orb-core{width:150px;height:150px}.orb-core .hero-mascot{width:148px;height:148px}}
 @media(max-width:640px){.orb-core{width:132px;height:132px}.orb-core .hero-mascot{width:130px;height:130px}}
+
+/* Motion polish: mascot, cards, charts and interactive feedback */
+.remarkable-mascot{transform-origin:50% 60%;animation:mascot-idle 4.6s ease-in-out infinite}
+.brand-mark .remarkable-mascot{animation-duration:3.8s}
+.remarkable-mascot g path:nth-child(1),.remarkable-mascot g path:nth-child(2),.remarkable-mascot g path:nth-child(3),.remarkable-mascot g path:nth-child(4){transform-box:fill-box;transform-origin:center;animation:tentacle-sway 2.8s ease-in-out infinite}
+.remarkable-mascot g path:nth-child(2){animation-delay:-.7s}
+.remarkable-mascot g path:nth-child(3){animation-delay:-1.2s}
+.remarkable-mascot g path:nth-child(4){animation-delay:-.4s}
+.hero-orb{animation:orb-breathe 7s ease-in-out infinite}
+.orbit-ring{will-change:transform}
+.satellite{animation:satellite-glow 2.4s ease-in-out infinite alternate}
+.s2{animation-delay:-.8s}.s3{animation-delay:-1.4s}
+.spark{animation:spark-drift 4s ease-in-out infinite}
+.spark2{animation-delay:-1.6s}
+.live-dot{animation:live-pulse 1.8s ease-out infinite}
+.token-card{animation:card-arrive .65s both;transform-origin:50% 80%}
+.token-card:nth-child(2){animation-delay:.07s}.token-card:nth-child(3){animation-delay:.14s}
+.token-card:nth-child(4){animation-delay:.21s}.token-card:nth-child(5){animation-delay:.28s}.token-card:nth-child(6){animation-delay:.35s}
+.token-card:hover .token-icon{animation:icon-pop .45s ease-out}
+.token-card:hover .mini-chart svg{animation:chart-glow 1.2s ease-in-out infinite alternate}
+.token-card:hover .mini-chart path:first-child{stroke-dasharray:500;stroke-dashoffset:500;animation:chart-draw 1.1s ease forwards}
+.save:active,.card-arrow:active,.launch-btn:active,.wallet-btn:active,.primary-cta:active{transform:scale(.95)}
+.tabs button,.chain-filter,.search,.card-arrow,.save{transition:transform .2s ease,border-color .2s ease,background .2s ease,color .2s ease}
+.tabs button:active{transform:translateY(1px) scale(.98)}
+.modal{animation:modal-pop .32s cubic-bezier(.2,.8,.2,1) both}
+.modal-backdrop{animation:backdrop-in .22s ease both}
+@keyframes mascot-idle{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-4px) rotate(1deg)}}
+@keyframes tentacle-sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(3deg)}}
+@keyframes orb-breathe{0%,100%{filter:brightness(1)}50%{filter:brightness(1.13)}}
+@keyframes satellite-glow{from{box-shadow:0 0 8px #b5ff6d55;transform:scale(.82)}to{box-shadow:0 0 23px #b5ff6dcc;transform:scale(1.16)}}
+@keyframes spark-drift{0%,100%{transform:translateY(0) rotate(0);opacity:.65}50%{transform:translateY(-12px) rotate(24deg);opacity:1}}
+@keyframes live-pulse{0%{box-shadow:0 0 0 0 #b5ff6d77}70%{box-shadow:0 0 0 7px #b5ff6d00}100%{box-shadow:0 0 0 0 #b5ff6d00}}
+@keyframes card-arrive{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes icon-pop{0%{transform:rotate(0) scale(1)}45%{transform:rotate(-8deg) scale(1.12)}100%{transform:rotate(0) scale(1)}}
+@keyframes chart-draw{to{stroke-dashoffset:0}}
+@keyframes chart-glow{to{filter:drop-shadow(0 0 5px color-mix(in srgb,var(--token) 50%,transparent))}}
+@keyframes modal-pop{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes backdrop-in{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.remarkable-mascot,.hero-orb,.satellite,.spark,.live-dot,.token-card,.modal,.modal-backdrop,.token-card:hover .mini-chart svg{animation:none!important}.token-card:hover .mini-chart path:first-child{animation:none!important;stroke-dasharray:none;stroke-dashoffset:0}}
