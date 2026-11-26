@@ -4,7 +4,7 @@ const fetchBaseDexTokens = async () => {
     getJson("https://api.dexscreener.com/token-boosts/latest/v1").catch(() => []),
     getJson("https://api.dexscreener.com/token-profiles/latest/v1").catch(() => []),
     getJson("https://www.clanker.world/api/tokens/trending").catch(() => null),
-    Promise.all(["base","clanker","degen","higher"].map(q =>
+    Promise.all(["base","clanker","degen","higher","brett","toshi","aero","virtual","weth","usdc","higher","based"].map(q =>
       getJson("https://api.dexscreener.com/latest/dex/search?q=" + encodeURIComponent(q)).catch(() => null)
     ))
   ]);
@@ -70,7 +70,8 @@ const getJson = async (url) => {
 
 const extractTokens = (payload) => {
   if (Array.isArray(payload)) return payload;
-  return payload?.tokens || payload?.data?.tokens || payload?.data || payload?.results || payload?.pools || [];
+  const candidates = [payload?.tokens, payload?.data?.tokens, payload?.data, payload?.results, payload?.pools, payload?.pairs];
+  return candidates.find(Array.isArray) || [];
 };
 
 const isBase = value => {
