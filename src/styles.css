@@ -144,3 +144,10 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 .token-icon{overflow:hidden;flex-shrink:0}
 .token-icon img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
 .token-icon:has(img){padding:0;background:#111923}
+
+
+/* Token artwork fallback and image sizing */
+.token-icon{position:relative;overflow:hidden;flex:none}
+.token-icon img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.token-icon:has(img){padding:0;background:#111923}
+.token-icon-fallback{display:grid;place-items:center;width:100%;height:100%;font:700 20px Manrope,sans-serif;color:var(--token);text-transform:uppercase;background:radial-gradient(circle at 35% 25%,color-mix(in srgb,var(--token) 25%,transparent),transparent 70%)}
