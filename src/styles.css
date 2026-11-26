@@ -174,3 +174,14 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 .dex-live-meta strong{color:#e8edf2;font-weight:650}
 .dex-live-meta a{margin-left:auto;color:var(--acid,#b5ff6d);font-weight:700}
 .dex-live-meta a:hover{text-decoration:underline}
+
+/* DexScreener buy/sell activity per token */
+.dex-trade-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.trade-period{padding:12px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.025)}
+.trade-period>small{display:block;margin-bottom:10px;color:#7f8b98;font-size:9px;letter-spacing:.12em}
+.trade-period>div{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.trade-buy,.trade-sell{font-size:10px;font-weight:700;display:flex;align-items:center;gap:6px}
+.trade-buy{color:#b5ff6d}.trade-sell{color:#ff8585}
+.trade-buy b,.trade-sell b{font-size:15px;color:#edf2f5;font-variant-numeric:tabular-nums}
+.dex-trade-stats>p{grid-column:1/-1;margin:0;color:#75818d;font-size:9px;line-height:1.5}
+@media(max-width:420px){.dex-trade-stats{gap:7px}.trade-period{padding:10px}.trade-period>div{gap:5px}.trade-buy,.trade-sell{font-size:9px}}
