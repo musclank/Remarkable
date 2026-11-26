@@ -167,3 +167,10 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 .chart-loading,.chart-error{min-height:110px;display:flex;align-items:center;justify-content:center;text-align:center;color:#8995a2;font-size:12px;padding:16px}
 .chart-foot{display:flex;justify-content:space-between;gap:10px;color:#73808d;font-size:10px;border-top:1px solid rgba(255,255,255,.06);padding-top:10px}
 @media(max-width:520px){.live-price-chart{padding:11px}.real-chart{height:120px}.chart-foot{font-size:9px}}
+
+/* DexScreener live quote metadata */
+.dex-live-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:18px;padding-top:13px;border-top:1px solid rgba(255,255,255,.07);color:#85929f;font-size:10px}
+.dex-live-meta span{display:flex;gap:6px;align-items:center}
+.dex-live-meta strong{color:#e8edf2;font-weight:650}
+.dex-live-meta a{margin-left:auto;color:var(--acid,#b5ff6d);font-weight:700}
+.dex-live-meta a:hover{text-decoration:underline}
