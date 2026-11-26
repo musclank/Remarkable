@@ -44,3 +44,10 @@ No API key or Cloudflare environment variable is required. The page refreshes th
 `src/market.js` normalizes token metadata and market fields from the API response, including common image/logo fields and IPFS image URLs. Token artwork falls back to a symbol initial if an image is missing or fails to load. The Live indicator means the endpoint responded successfully; it does not verify token safety, contract authenticity, or guarantee that every market field is present.
 
 Official Clanker API documentation: https://github.com/clanker-devco/DOCS/blob/main/api-reference/public/README.md
+
+
+## Live token price history
+
+The token detail modal now requests OHLCV candles from the Cloudflare Pages Function at `/api/market/chart`. The function resolves the token's highest-liquidity indexed pool and requests price candles from GeckoTerminal. Supported chart networks are Base, Solana and Ethereum. Time ranges are 1 day, 1 week and 1 month. The public GeckoTerminal API is rate-limited and its data may be delayed or unavailable for very new or illiquid tokens; the chart displays an unavailable message rather than fabricated price history.
+
+The chart requires Cloudflare Pages Functions to be enabled for this project. No API key or environment variable is required for GeckoTerminal's public endpoint.
