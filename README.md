@@ -28,10 +28,12 @@ The R lettermark has been replaced with an original vector mascot: a small lumin
 - Dynamic chain filter based on Clanker feed
 - Watchlist saved in browser local storage
 - Token detail modal with Clanker market records
-- Wallet and launch-token preview dialogs
+- Wallet-connected Clanker v5 token deployment using the official SDK
+- Token logo upload to IPFS through a Cloudflare Pages Function
+- Onchain launch review, wallet confirmation, transaction status and BaseScan / Clanker links
 
 ## Important
-The token explorer combines Clanker's public Trending API with DexScreener's latest Base token profiles and boost feed. The merged feed prioritizes Base token records while retaining other Clanker trending tokens, so Base assets are not crowded out by tokens on other networks. Wallet authentication, token creation, trading and backend persistence are not connected. Market data can be delayed or incomplete; verify token details and contract addresses independently before trading.
+The token explorer combines Clanker's public Trending API with DexScreener's latest Base token profiles and boost feed. The merged feed prioritizes Base token records while retaining other Clanker trending tokens, so Base assets are not crowded out by tokens on other networks. Wallet connection uses the browser's EIP-1193 provider. Token deployment is performed client-side through the official Clanker v5 SDK; signing and transaction approval stay in the user's wallet. Market data can be delayed or incomplete; verify token details and contract addresses independently before trading.
 
 ## Clanker market feed
 
@@ -51,3 +53,15 @@ Official Clanker API documentation: https://github.com/clanker-devco/DOCS/blob/m
 The token detail modal requests current USD token price and 24-hour change from DexScreener through the Cloudflare Pages Function at `/api/market/chart`. The function selects the highest-liquidity matching pair on Base, Solana or Ethereum and also displays available liquidity and 24-hour volume. This view intentionally shows a live quote rather than OHLCV history because DexScreener's public token API provides pair market data, not a public candle-history endpoint. Quotes may be delayed or unavailable for newly listed tokens.
 
 No API key or environment variable is required for DexScreener's public endpoint.
+
+
+## Clanker SDK token launches
+
+The Launch token flow uses the official `clanker-sdk/v5` package and `viem` on Base mainnet. It submits the launch transaction from the connected wallet, waits for confirmation, and displays the resulting token address and transaction links.
+
+Launch defaults are shown in the review screen before the user signs: 1% buy tax, 1% sell tax, native ETH pool, 100% creator reward allocation to the connected wallet, editable metadata and anti-sniping enabled. The user pays the network / launch costs from their own wallet and must verify the settings in their wallet before approving.
+
+Token logo files are pinned to IPFS through `functions/api/launch/upload.js`. Configure a Pinata JWT as a Cloudflare Pages secret / environment variable named `PINATA_JWT` (Production and Preview as needed). Do not place the JWT in frontend code or commit it to GitHub. Without this secret, image upload and token launch will stop with a configuration message.
+
+Official SDK: https://github.com/clanker-devco/clanker-sdk
+Clanker v5 documentation: https://github.com/clanker-devco/DOCS/blob/main/references/core-contracts/v5.md
