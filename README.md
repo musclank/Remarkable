@@ -25,18 +25,22 @@ The R lettermark has been replaced with an original vector mascot: a small lumin
 - Animated hero and orbit artwork
 - Trending, New and Watchlist explorer tabs
 - Token and chain search
-- Solana/Base chain filter
+- Dynamic chain filter based on Clanker feed
 - Watchlist saved in browser local storage
-- Token detail modal with demo metrics and sample chart
+- Token detail modal with Clanker market records
 - Wallet and launch-token preview dialogs
 
 ## Important
-All token names, prices, market caps, volume, charts and addresses shown in this prototype are sample data. Live market feeds, wallet authentication, token creation, trading, verified onchain token details, and backend persistence are not connected yet. Do not treat demo values as financial data.
+The token explorer connects to Clanker's public Trending API. Wallet authentication, token creation, trading and backend persistence are not connected. Market data can be delayed or incomplete; verify token details and contract addresses independently before trading.
 
-## Market data adapter
+## Clanker market feed
 
-The explorer now reads market records through `src/market.js`. It uses the built-in sample tokens when no API URL is configured. To connect a compatible feed, add `VITE_MARKET_API_URL` to the Cloudflare Pages environment variables and provide an endpoint returning either an array of token objects or an object containing `tokens`, `data`, or `results` as an array.
+The explorer fetches the top 10 records from Clanker's public Trending endpoint:
 
-Each record can provide `name`, `symbol`, `chain` or `network`, `description`, `marketCap` or `market_cap` or `fdv`, `volume24h` or `volume_24h` or `volume`, `priceChange24h` or `change24h`, and `address` or `mint` or `contractAddress`. The adapter normalizes these into the explorer card fields. The endpoint must be publicly accessible from the browser and support CORS. Keep any private API secret on a server-side proxy; Vite `VITE_` variables are exposed in the client bundle.
+`https://www.clanker.world/api/tokens/trending`
 
-The UI marks data as live only when the configured endpoint responds successfully. It falls back to sample data and displays an error message if the request fails. A successful API response does not itself verify token safety or contract authenticity.
+No API key or Cloudflare environment variable is required. The page refreshes the feed every 30 seconds and falls back to clearly labeled sample records if the API request fails. The browser request requires Clanker's endpoint to allow CORS.
+
+`src/market.js` normalizes token metadata and market fields from the API response. The Live indicator means the endpoint responded successfully; it does not verify token safety, contract authenticity, or guarantee that every market field is present.
+
+Official Clanker API documentation: https://github.com/clanker-devco/DOCS/blob/main/api-reference/public/README.md
