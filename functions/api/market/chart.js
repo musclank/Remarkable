@@ -33,6 +33,10 @@ export async function onRequest({ request }) {
       change24h: pair.priceChange?.h24 ?? null,
       liquidityUsd: pair.liquidity?.usd ?? null,
       volume24hUsd: pair.volume?.h24 ?? null,
+      transactions: {
+        h1: { buys: pair.txns?.h1?.buys ?? null, sells: pair.txns?.h1?.sells ?? null },
+        h24: { buys: pair.txns?.h24?.buys ?? null, sells: pair.txns?.h24?.sells ?? null }
+      },
       pairAddress: pair.pairAddress || null,
       pairUrl: pair.url || null,
       candles: []
