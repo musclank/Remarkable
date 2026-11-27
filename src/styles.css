@@ -249,3 +249,27 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 
 
 .launch-status{display:flex;align-items:flex-start;gap:9px;padding:12px;border:1px solid #b5ff6d28;border-radius:9px;background:#b5ff6d08;color:#b5ff6d;font-size:11px;line-height:1.55;overflow-wrap:anywhere}.launch-review-actions button:disabled,.launch-next:disabled{opacity:.55;cursor:not-allowed}.launch-success{display:flex;flex-direction:column;gap:12px}.launch-success>div{display:flex;flex-direction:column;gap:7px}.launch-success small{color:#75828e;font-size:9px;letter-spacing:.1em}.launch-success strong{font-size:11px;color:#e9eff3;overflow-wrap:anywhere}.launch-success>a{display:inline-flex;align-items:center;gap:6px;color:#b5ff6d;font-size:11px}.launch-success .launch-copy{margin:0;padding:9px 0;align-self:flex-start}
+
+/* Clanker launch pool and reward controls */
+.launch-pool-section,.launch-rewards-section{display:grid;gap:12px;padding:14px;border:1px solid #ffffff12;border-radius:12px;background:#ffffff03}
+.launch-tax-heading{display:flex;flex-direction:column;gap:5px}
+.launch-tax-heading strong{color:#eef3f6;font-size:13px}
+.launch-tax-heading small,.launch-pool-section>p,.launch-rewards-section>p{color:#83909c;font-size:10px;line-height:1.5;margin:0}
+.launch-field select{width:100%;border:1px solid #ffffff16;border-radius:9px;background:#060b11;color:#eef3f6;padding:12px;font:inherit;font-size:12px;outline:none}
+.launch-reward-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #ffffff12;border-radius:10px}
+.launch-reward-row>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.launch-reward-row>div strong{font-size:11px;color:#eef3f6}
+.launch-reward-row>div small{font-size:9px;color:#83909c;overflow-wrap:anywhere}
+.launch-reward-row>label{display:flex;flex-direction:column;gap:5px;width:105px;flex:none}
+.launch-reward-row>label span{font-size:9px;color:#b9c2cb}
+.launch-reward-row input,.launch-reward-fields input{width:100%;min-width:0;border:1px solid #ffffff16;border-radius:8px;background:#060b11;color:#eef3f6;padding:10px;font:inherit;font-size:11px;outline:none}
+.launch-reward-row label small{font-size:8px;color:#6d7a87}
+.launch-reward-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}
+.launch-reward-fields label{display:flex;flex-direction:column;gap:6px;min-width:0}
+.launch-reward-fields label span{font-size:9px;color:#b9c2cb;font-weight:700}
+.launch-remove-recipient,.launch-add-recipient{border:1px solid #ffffff18;border-radius:8px;background:#ffffff05;color:#b5ff6d;padding:10px;font:inherit;font-size:10px;font-weight:700;cursor:pointer}
+.launch-remove-recipient{grid-column:1/-1;color:#ff9b9b}
+.launch-add-recipient:disabled{opacity:.4;cursor:not-allowed}
+.launch-reward-total{display:grid;grid-template-columns:1fr auto;gap:8px;font-size:10px;color:#83909c}
+.launch-reward-total strong{color:#b5ff6d;text-align:right}
+@media(max-width:520px){.launch-reward-fields{grid-template-columns:1fr}.launch-remove-recipient{grid-column:auto}.launch-reward-row{align-items:flex-start}}
