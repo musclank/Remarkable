@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import {PrivyProvider,usePrivy,useWallets,useCreateWallet,getEmbeddedConnectedWallet} from '@privy-io/react-auth';
-import {ArrowUpRight,Check,LogOut,Wallet,X} from 'lucide-react';
+import {ArrowUpRight,Check,Copy,LogOut,Wallet,X} from 'lucide-react';
 import LaunchModal from './LaunchModal.jsx';
 
 export function PrivyAppProvider({appId,children}){
@@ -44,11 +44,14 @@ export function PrivyWalletPanel({onClose}){
   const {wallets}=useWallets();
   const [busy,setBusy]=useState(false);
   const [exportError,setExportError]=useState('');
+  const [addressCopied,setAddressCopied]=useState(false);
+  const [copyError,setCopyError]=useState('');
   const linkedWalletAddress=user?.linkedAccounts?.find(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')?.address||user?.wallet?.address||'';
   const embeddedWallet=getEmbeddedConnectedWallet(wallets)||wallets.find(item=>linkedWalletAddress&&item.address?.toLowerCase()===linkedWalletAddress.toLowerCase())||wallets.find(item=>item.walletClientType==='privy'&&item.chainType==='ethereum');
   const hasEmbeddedEthereumWallet=!!embeddedWallet||!!user?.linkedAccounts?.some(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')||(user?.wallet?.walletClientType==='privy'&&user?.wallet?.chainType==='ethereum');
   const address=embeddedWallet?.address||user?.linkedAccounts?.find(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')?.address||user?.wallet?.address||'';
   const short=value=>value?value.slice(0,6)+'…'+value.slice(-4):'';
+  const doCopyAddress=async()=>{if(!address)return;setCopyError('');try{await navigator.clipboard.writeText(address);setAddressCopied(true);setTimeout(()=>setAddressCopied(false),1800)}catch{setCopyError('Could not copy address. You can select and copy it manually.')}};
   const doLogin=async()=>{setBusy(true);try{await login()}finally{setBusy(false)}};
   const doLogout=async()=>{setBusy(true);try{await logout()}finally{setBusy(false)}};
   const doExport=async()=>{
@@ -65,7 +68,7 @@ export function PrivyWalletPanel({onClose}){
     <div className="eyebrow"><span className="live-dot"/> PRIVY WALLET</div>
     <h3>One wallet.<br/><em>Your onchain identity.</em></h3>
     <p className="swap-intro">Sign in with your email. Privy automatically creates and manages your embedded wallet—no external wallet connection needed.</p>
-    {!ready?<div className="launch-status">Initializing Privy…</div>:authenticated?<><div className="launch-wallet-row"><div><small>CONNECTED WALLET</small><strong>{short(address)||'Wallet created'}</strong><span>{embeddedWallet?'Privy embedded wallet':'Privy account active'}</span></div><button className="launch-connect" onClick={doLogout} disabled={busy}><LogOut size={15}/>{busy?'Please wait':'Sign out'}</button></div>{hasEmbeddedEthereumWallet&&<div className="privy-export-area"><button className="primary-cta launch-next" onClick={doExport} disabled={busy}>{busy?'Opening secure export…':'Export private key'} <ArrowUpRight size={16}/></button><p className="launch-disclaimer">Privy will open its secure export flow. Never share your private key with anyone.</p>{exportError&&<div className="launch-error" role="alert">{exportError}</div>}</div>}</>:<button className="primary-cta launch-next" onClick={doLogin} disabled={busy}>{busy?'Opening Privy…':'Create wallet with email'} <ArrowUpRight size={16}/></button>}
+    {!ready?<div className="launch-status">Initializing Privy…</div>:authenticated?<><div className="launch-wallet-row"><div><small>CONNECTED WALLET</small><strong>{short(address)||'Wallet created'}</strong><span>{embeddedWallet?'Privy embedded wallet':'Privy account active'}</span></div><button className="launch-connect" onClick={doLogout} disabled={busy}><LogOut size={15}/>{busy?'Please wait':'Sign out'}</button></div>{address&&<div className="privy-address-copy"><small>WALLET ADDRESS</small><code>{address}</code><button className="how-secondary" onClick={doCopyAddress}><>{addressCopied?<Check size={14}/>:<Copy size={14}/>} {addressCopied?'Copied':'Copy address'}</></button>{copyError&&<span role="status">{copyError}</span>}</div>}{hasEmbeddedEthereumWallet&&<div className="privy-export-area"><button className="primary-cta launch-next" onClick={doExport} disabled={busy}>{busy?'Opening secure export…':'Export private key'} <ArrowUpRight size={16}/></button><p className="launch-disclaimer">Privy will open its secure export flow. Never share your private key with anyone.</p>{exportError&&<div className="launch-error" role="alert">{exportError}</div>}</div>}</>:<button className="primary-cta launch-next" onClick={doLogin} disabled={busy}>{busy?'Opening Privy…':'Create wallet with email'} <ArrowUpRight size={16}/></button>}
     <p className="launch-disclaimer">Privy manages sign-in and wallet access. Review every transaction in the wallet before approving it.</p>
     <button className="swap-cancel" onClick={onClose}><X size={14}/> Close</button>
   </div>;
