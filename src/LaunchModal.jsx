@@ -10,7 +10,7 @@ const WETH_BASE='0x4200000000000000000000000000000000000006';
 const USDC_BASE='0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const shortAddress=value=>value?value.slice(0,6)+'…'+value.slice(-4):'';
 
-export default function LaunchModal({onClose}){
+export default function LaunchModal({onClose,privyConnect}){
   const [name,setName]=useState('');
   const [symbol,setSymbol]=useState('');
   const [description,setDescription]=useState('');
@@ -34,7 +34,7 @@ export default function LaunchModal({onClose}){
   const [tokenAddress,setTokenAddress]=useState('');
   const [copied,setCopied]=useState(false);
 
-  const provider=typeof window!=='undefined'?window.ethereum:null;
+  const [provider,setProvider]=useState(typeof window!=='undefined'?window.ethereum||null:null);
   const baseConnected=Boolean(wallet&&chainId?.toLowerCase()===BASE_CHAIN);
 
   useEffect(()=>{
@@ -50,22 +50,39 @@ export default function LaunchModal({onClose}){
 
   const connect=async()=>{
     setError('');
-    if(!provider){setError('No wallet detected. Open REMARKABLE in MetaMask, Coinbase Wallet, or another EVM wallet browser.');return}
     setConnecting(true);
     try{
-      const accounts=await provider.request({method:'eth_requestAccounts'});
-      const account=accounts?.[0];
-      if(!account)throw new Error('Wallet did not return an account.');
-      setWallet(account);
-      let current=await provider.request({method:'eth_chainId'});
+      let activeProvider=provider;
+      let activeWallet=wallet;
+      let privyWallet=null;
+      if(privyConnect){
+        const session=await privyConnect();
+        if(!session){setError('Complete Privy sign-in, then tap Connect wallet again.');return;}
+        activeProvider=session.provider;
+        privyWallet=session.wallet;
+        activeWallet=privyWallet.address;
+        setProvider(activeProvider);
+      }else{
+        if(!activeProvider){setError('No wallet detected. Use a wallet browser or configure Privy for this app.');return;}
+        const accounts=await activeProvider.request({method:'eth_requestAccounts'});
+        activeWallet=accounts?.[0];
+        if(!activeWallet)throw new Error('Wallet did not return an account.');
+      }
+      if(!activeWallet)throw new Error('Wallet did not return an account.');
+      setWallet(activeWallet);
+      let current=await activeProvider.request({method:'eth_chainId'});
       if(current.toLowerCase()!==BASE_CHAIN){
-        try{await provider.request({method:'wallet_switchEthereumChain',params:[{chainId:BASE_CHAIN}]})}
-        catch(switchError){
-          if(switchError?.code===4902){
-            await provider.request({method:'wallet_addEthereumChain',params:[{chainId:BASE_CHAIN,chainName:'Base',nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},rpcUrls:['https://mainnet.base.org'],blockExplorerUrls:['https://basescan.org']}]});
-          }else throw switchError;
+        if(privyWallet?.switchChain){
+          await privyWallet.switchChain(8453);
+        }else{
+          try{await activeProvider.request({method:'wallet_switchEthereumChain',params:[{chainId:BASE_CHAIN}]})}
+          catch(switchError){
+            if(switchError?.code===4902){
+              await activeProvider.request({method:'wallet_addEthereumChain',params:[{chainId:BASE_CHAIN,chainName:'Base',nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},rpcUrls:['https://mainnet.base.org'],blockExplorerUrls:['https://basescan.org']}]});
+            }else throw switchError;
+          }
         }
-        current=await provider.request({method:'eth_chainId'});
+        current=await activeProvider.request({method:'eth_chainId'});
       }
       setChainId(current);
       if(current.toLowerCase()!==BASE_CHAIN)throw new Error('Switch your wallet to Base mainnet to launch.');
