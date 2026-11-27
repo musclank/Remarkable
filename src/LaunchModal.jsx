@@ -213,6 +213,7 @@ export default function LaunchModal({onClose,privyConnect}){
       {error&&<div className="launch-error" role="alert">{error}</div>}
       {status&&<div className="launch-status" role="status">{launching&&<LoaderCircle size={15} className="spin"/>}{status}</div>}
       {txHash&&<a className="explorer-link launch-transaction-link" href={'https://basescan.org/tx/'+txHash} target="_blank" rel="noreferrer"><ExternalLink size={14}/> {launching?'Track pending transaction on BaseScan':'View submitted transaction on BaseScan'}</a>}
+      {confirmationUncertain&&<button type="button" className="launch-back" onClick={()=>{setConfirmationUncertain(false);setError('');setStatus('BaseScan checked. You can retry if the previous transaction did not create a token.')}}>I checked BaseScan — allow retry</button>}
       <div className="launch-review-actions"><button className="launch-back" onClick={()=>{setStep('edit');setError('');setStatus('')}} disabled={launching}><ArrowLeft size={15}/> Edit details</button><button className="primary-cta" onClick={launch} disabled={launching||confirmationUncertain}>{launching?<LoaderCircle size={15} className="spin"/>:<ArrowUpRight size={16}/>} {launching?'Launching…':confirmationUncertain?'Check BaseScan before retry':'Deploy with Clanker SDK'}</button></div>
       <p className="launch-disclaimer">Your wallet will ask you to sign and submit a real Base transaction. Never share your recovery phrase or private key.</p>
     </>:<>
