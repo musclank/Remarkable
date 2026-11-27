@@ -84,9 +84,10 @@ export function PrivyWalletButton({onClick}){
 }
 
 export function PrivyPortfolioPanel({onClose}){
-  const {ready,authenticated,user}=usePrivy();
+  const {ready,authenticated,user,login}=usePrivy();
   const {wallets}=useWallets();
   const [network,setNetwork]=useState('base');
+  const [refreshTick,setRefreshTick]=useState(0);
   const [balance,setBalance]=useState('');
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState('');
@@ -97,6 +98,21 @@ export function PrivyPortfolioPanel({onClose}){
     ethereum:{name:'Ethereum',symbol:'ETH',rpc:'https://ethereum-rpc.publicnode.com'},
     base:{name:'Base',symbol:'ETH',rpc:'https://base-rpc.publicnode.com'},
     bsc:{name:'BNB Chain',symbol:'BNB',rpc:'https://bsc-rpc.publicnode.com'}
+  };
+  useEffect(()=>{
+    if(!ready||!authenticated||!address){setBalance('');return;}
+    const networkInfo=networks[network];const controller=new AbortController();let active=true;
+    setLoading(true);setError('');
+    fetch(networkInfo.rpc,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_getBalance',params:[address,'latest']}),signal:controller.signal})
+      .then(async response=>{if(!response.ok)throw new Error('RPC request failed');return response.json()})
+      .then(result=>{if(result.error)throw new Error(result.error.message||'Unable to read balance');const wei=BigInt(result.result||'0x0');const whole=wei/1000000000000000000n;const fraction=(wei%1000000000000000000n).toString().padStart(18,'0').slice(0,6);if(active)setBalance(whole.toString()+'.'+fraction)})
+      .catch(err=>{if(active&&err.name!=='AbortError')setError(err.message||'Unable to load balance')})
+      .finally(()=>{if(active)setLoading(false)});
+    return()=>{active=false;controller.abort()};
+  },[ready,authenticated,address,network,refreshTick]);
+  const short=value=>value?value.slice(0,6)+'…'+value.slice(-4):'';
+  return <div className="privy-portfolio-panel"><div className="modal-icon"><Wallet size={24}/></div><div className="eyebrow"><span className="live-dot"/> MY PORTFOLIO</div><h3>Your onchain<br/><em>balance.</em></h3><p className="swap-intro">Read-only wallet balance. This panel never requests permission to move your funds.</p>{!ready?<div className="launch-status">Initializing wallet…</div>:!authenticated?<><p className="portfolio-empty">Connect your Privy wallet to view your native balance.</p><button className="primary-cta launch-next" onClick={()=>login()}>Connect wallet <ArrowUpRight size={16}/></button></>:<><div className="portfolio-wallet-address"><small>WALLET ADDRESS</small><strong>{short(address)}</strong></div><label className="portfolio-network">NETWORK<select value={network} onChange={event=>setNetwork(event.target.value)}>{Object.entries(networks).map(([key,item])=><option key={key} value={key}>{item.name}</option>)}</select></label><div className="portfolio-balance"><small>NATIVE BALANCE · {networks[network].symbol}</small><strong>{loading?'Loading…':balance?Number(balance).toLocaleString(undefined,{maximumFractionDigits:6}):'—'} <em>{networks[network].symbol}</em></strong><span>{loading?'Reading balance from public RPC':error||'Live onchain balance · read-only'}</span></div>{error&&<button className="how-secondary" onClick={()=>setRefreshTick(value=>value+1)}>Try again</button>}</>}<button className="swap-cancel" onClick={onClose}><X size={14}/> Close</button></div>;
+}
   };
   useEffect(()=>{
     if(!ready||!authenticated||!address){setBalance('');return;}
