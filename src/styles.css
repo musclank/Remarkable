@@ -440,3 +440,10 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 /* Let in-page anchors scroll the document instead of a clipped app wrapper */
 .app{overflow:clip}
 #community{scroll-margin-top:24px}
+
+/* Privy wallet address display and copy action */
+.privy-address-copy{display:grid;gap:8px;padding:13px;border:1px solid #ffffff12;border-radius:10px;background:#ffffff03;min-width:0}
+.privy-address-copy>small{color:#7e8b97;font-size:9px;font-weight:800;letter-spacing:.12em}
+.privy-address-copy>code{display:block;color:#c8d1d9;font:10px/1.6 'DM Mono',monospace;overflow-wrap:anywhere;user-select:text}
+.privy-address-copy>.how-secondary{justify-self:start;padding:8px 10px;font-size:10px}
+.privy-address-copy>[role=status]{color:#ff9b9b;font-size:10px;line-height:1.5}
