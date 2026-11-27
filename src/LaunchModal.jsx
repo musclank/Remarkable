@@ -128,6 +128,9 @@ export default function LaunchModal({onClose,privyConnect}){
     setError('');
     if(!provider||!baseConnected){setError('Connect your wallet on Base before launching.');return}
     setLaunching(true);
+    setTxHash('');
+    setTokenAddress('');
+    setCopied(false);
     try{
       setStatus('Uploading token logo to IPFS…');
       const form=new FormData();
