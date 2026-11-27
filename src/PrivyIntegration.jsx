@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {PrivyProvider,usePrivy,useWallets} from '@privy-io/react-auth';
+import {PrivyProvider,usePrivy,useWallets,useCreateWallet} from '@privy-io/react-auth';
 import {ArrowUpRight,Check,LogOut,Wallet,X} from 'lucide-react';
 import LaunchModal from './LaunchModal.jsx';
 
@@ -12,13 +12,26 @@ export function PrivyAppProvider({appId,children}){
 }
 
 export function PrivyLaunchModal({onClose}){
-  const {ready,authenticated,login}=usePrivy();
-  const {wallets}=useWallets();
+  const {ready,authenticated,login,user}=usePrivy();
+  const {wallets,ready:walletsReady}=useWallets();
+  const {createWallet}=useCreateWallet();
   const connect=async()=>{
     if(!ready)throw new Error('Privy is still initializing. Please try again.');
     if(!authenticated){await login();return null;}
-    const wallet=wallets.find(item=>item.chainType==='ethereum'&&item.walletClientType==='privy');
-    if(!wallet)throw new Error('Your Privy embedded wallet is still being created. Please close and reopen the wallet panel in a moment.');
+    let wallet=wallets.find(item=>item.chainType==='ethereum'&&item.walletClientType==='privy');
+    if(!wallet){
+      const existing=user?.linkedAccounts?.some(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')||(user?.wallet?.walletClientType==='privy'&&user?.wallet?.chainType==='ethereum');
+      if(!existing){
+        try{
+          wallet=await createWallet();
+        }catch(error){
+          throw new Error(error?.message||'Privy could not create your embedded wallet. Check the wallet creation setting in your Privy dashboard and try again.');
+        }
+      }else{
+        throw new Error(walletsReady?'Your Privy wallet exists but is not available in this session yet. Wait a few seconds and tap Use Privy wallet again.':'Privy is still loading your wallet. Wait a few seconds and tap Use Privy wallet again.');
+      }
+    }
+    if(!wallet)throw new Error('Privy wallet creation did not return a wallet. Please try again.');
     const provider=await wallet.getEthereumProvider();
     return {wallet,provider};
   };
