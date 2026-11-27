@@ -69,3 +69,7 @@ Clanker v5 documentation: https://github.com/clanker-devco/DOCS/blob/main/refere
 ## DEX swap handoff
 
 The explorer includes a DEX Swap modal for BNB Chain and Base. BNB Chain opens the official PancakeSwap app; Base opens the official Uniswap app. Token contract addresses from supported EVM token detail views can be prefilled. REMARKABLE does not custody funds or execute trades in its own app; users review and sign every transaction in the DEX and their wallet. Solana tokens are not routed through this EVM swap flow.
+
+## Platform information pages
+
+The site footer includes in-app Docs, About, Terms of Use, and Privacy Notice dialogs. The documentation describes token exploration, launch review, third-party market data, and the BNB Chain / Base DEX handoff. Terms and privacy content are general platform notices and should be reviewed by qualified counsel before treating them as final legal documents.
