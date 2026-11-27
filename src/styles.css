@@ -330,3 +330,24 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 .primary-cta,.launch-btn,.wallet-btn,.nav-swap{transition:transform .25s ease,filter .25s ease,box-shadow .25s ease}
 .primary-cta:hover,.launch-btn:hover,.wallet-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
 @media(prefers-reduced-motion:reduce){.hero h1,.section-head h2,.manifesto h2,.info-modal h3,.swap-modal h3,.launch-heading h3,.detail-heading h3,.eyebrow,.brand-mark .remarkable-mascot,.hero-mascot,.token-card,.primary-cta,.launch-btn,.wallet-btn,.nav-swap{animation:none!important;transition:none!important}.hero h1,.section-head h2,.manifesto h2,.info-modal h3,.swap-modal h3,.launch-heading h3,.detail-heading h3{background:none;-webkit-text-fill:currentColor}}
+
+
+/* Visibility fallback: keep all large headings readable on every browser */
+.hero h1,.section-head h2,.manifesto h2,.info-modal h3,.swap-modal h3,.launch-heading h3,.detail-heading h3{
+  background:none!important;
+  background-image:none!important;
+  color:#f5f7f4!important;
+  -webkit-text-fill-color:#f5f7f4!important;
+  text-shadow:0 0 18px #b5ff6d10;
+}
+.hero h1 em,.section-head h2 em,.manifesto h2 em,.info-modal h3 em,.swap-modal h3 em,.launch-heading h3 em,.detail-heading h3 em{
+  background:none!important;
+  color:#b5ff6d!important;
+  -webkit-text-fill-color:#b5ff6d!important;
+}
+@media(prefers-reduced-motion:reduce){
+  .hero h1,.section-head h2,.manifesto h2,.info-modal h3,.swap-modal h3,.launch-heading h3,.detail-heading h3{
+    background:none!important;color:#f5ffef!important;-webkit-text-fill-color:#f5ffef!important;
+  }
+  .hero h1 em,.section-head h2 em,.manifesto h2 em,.info-modal h3 em,.swap-modal h3 em,.launch-heading h3 em,.detail-heading h3 em{color:#b5ff6d!important;-webkit-text-fill-color:#b5ff6d!important}
+}
