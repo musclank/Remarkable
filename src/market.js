@@ -48,7 +48,7 @@ export function normalizeMarketToken(raw, index = 0) {
     id:String(pick(raw.id, token.id, address, symbol + '-' + index)),
     name, symbol,
     desc:pick(token.description, raw.description, metadata.description, raw.desc, 'Live onchain token market data.'),
-    chain:chain.includes('BASE') || chain === '8453' ? 'BASE' : chain,
+    chain:chain.includes('BASE') || chain === '8453' ? 'BASE' : chain.includes('BSC') || chain.includes('BNB') || chain === '56' ? 'BSC' : chain,
     cap:money(cap), vol:money(volume),
     change:change === null || change === undefined || change === '' || !Number.isFinite(changeNumber) ? '—' : (changeNumber > 0 ? '+' : '') + changeNumber.toFixed(2) + '%',
     color, icon,
