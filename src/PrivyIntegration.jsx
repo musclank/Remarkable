@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useEffect,useState} from 'react';
 import {PrivyProvider,usePrivy,useWallets,useCreateWallet,getEmbeddedConnectedWallet} from '@privy-io/react-auth';
 import {ArrowUpRight,Check,LogOut,Wallet,X} from 'lucide-react';
 import LaunchModal from './LaunchModal.jsx';
