@@ -42,7 +42,7 @@ return <div className="app"><div className="ambient-background" aria-hidden="tru
 const privyAppId=String(import.meta.env.VITE_PRIVY_APP_ID||'').trim();
 function Root(){
   return privyAppId
-    ? <PrivyProvider appId={privyAppId} config={{appearance:{theme:'dark',accentColor:'#b5ff6d',showWalletLoginFirst:true},loginMethods:['email','wallet'],embeddedWallets:{ethereum:{createOnLogin:'users-without-wallets'}}}}><App privyConfigured/></PrivyProvider>
+    ? <PrivyProvider appId={privyAppId} config={{appearance:{theme:'dark',accentColor:'#b5ff6d',showWalletLoginFirst:false},loginMethods:['email'],embeddedWallets:{ethereum:{createOnLogin:'all-users'}}}}><App privyConfigured/></PrivyProvider>
     : <App privyConfigured={false}/>;
 }
 createRoot(document.getElementById('root')).render(<Root/>);
