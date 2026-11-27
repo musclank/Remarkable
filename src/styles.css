@@ -273,3 +273,23 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 .launch-reward-total{display:grid;grid-template-columns:1fr auto;gap:8px;font-size:10px;color:#83909c}
 .launch-reward-total strong{color:#b5ff6d;text-align:right}
 @media(max-width:520px){.launch-reward-fields{grid-template-columns:1fr}.launch-remove-recipient{grid-column:auto}.launch-reward-row{align-items:flex-start}}
+
+
+/* REMARKABLE DEX swap handoff */
+.nav-swap{border:0;background:transparent;color:#b5ff6d;font:inherit;font-size:inherit;cursor:pointer;padding:0}
+.swap-modal{display:grid;gap:14px}
+.swap-modal h3{margin:0;font-size:clamp(25px,5vw,34px);letter-spacing:-.05em;line-height:1.1;color:#f0f4f7}
+.swap-modal h3 em{color:#b5ff6d;font-style:normal}
+.swap-intro{margin:0;color:#8d99a5;font-size:12px;line-height:1.65}
+.swap-field{display:grid;gap:8px}
+.swap-field>span{display:flex;align-items:center;gap:8px;color:#b9c2cb;font-size:10px;font-weight:800;letter-spacing:.08em}
+.swap-field small{color:#6d7a87;font-size:8px}
+.swap-field input,.swap-field select{width:100%;min-width:0;border:1px solid #ffffff16;border-radius:9px;background:#060b11;color:#eef3f6;padding:13px;font:inherit;font-size:12px;outline:none}
+.swap-field input:focus,.swap-field select:focus{border-color:#b5ff6d70;box-shadow:0 0 0 3px #b5ff6d0c}
+.swap-field input::placeholder{color:#53616d}
+.swap-validation{padding:10px 12px;border:1px solid #ff777738;border-radius:9px;color:#ff9a9a;font-size:10px;line-height:1.5}
+.swap-note{padding:12px;border:1px solid #b5ff6d22;border-radius:10px;background:#b5ff6d06;color:#85929e;font-size:10px;line-height:1.65}
+.swap-open{width:100%;justify-content:center;min-height:48px}
+.swap-cancel{border:0;background:transparent;color:#8d99a5;font:inherit;font-size:11px;padding:8px;cursor:pointer}
+.detail-swap-cta{width:100%;justify-content:center;min-height:45px;margin-bottom:8px}
+@media(max-width:760px){.nav-swap{font-size:14px}}
