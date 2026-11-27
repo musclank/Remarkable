@@ -73,3 +73,9 @@ The explorer includes a DEX Swap modal for BNB Chain and Base. BNB Chain opens t
 ## Platform information pages
 
 The site footer includes in-app Docs, About, Terms of Use, and Privacy Notice dialogs. The documentation describes token exploration, launch review, third-party market data, and the BNB Chain / Base DEX handoff. Terms and privacy content are general platform notices and should be reviewed by qualified counsel before treating them as final legal documents.
+
+## Privy wallet authentication
+
+REMARKABLE uses `@privy-io/react-auth` for sign-in and embedded EVM wallet access. Set the public Privy App ID as `VITE_PRIVY_APP_ID` in Cloudflare Pages (Production and Preview environments), then redeploy. Add the deployed REMARKABLE domain and preview domain to the allowed app origins in the Privy dashboard. The App ID is intended for frontend configuration; never expose a Privy App Secret or other server secrets in a `VITE_*` variable.
+
+The current Clanker v5 launch flow is still **Base mainnet only**. Privy provides authentication and wallet transaction signing; Clanker handles token deployment. BNB Chain and Solana deployment require their own compatible launch contracts / launch services and are not enabled by this Privy connection alone.
