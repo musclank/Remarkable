@@ -34,6 +34,7 @@ export default function LaunchModal({onClose,privyConnect}){
   const [tokenAddress,setTokenAddress]=useState('');
   const [copied,setCopied]=useState(false);
   const [confirmationUncertain,setConfirmationUncertain]=useState(false);
+  const [walletAssetMessage,setWalletAssetMessage]=useState('');
 
   const [provider,setProvider]=useState(typeof window!=='undefined'?window.ethereum||null:null);
   const baseConnected=Boolean(wallet&&chainId?.toLowerCase()===BASE_CHAIN);
@@ -125,6 +126,14 @@ export default function LaunchModal({onClose,privyConnect}){
   const review=event=>{event.preventDefault();const issue=validate();if(issue){setError(issue);return}setError('');setStep('review')};
 
   const copy=async value=>{try{await navigator.clipboard.writeText(value);setCopied(true)}catch{setError('Clipboard access was blocked.')}};
+  const addTokenToWallet=async()=>{
+    setWalletAssetMessage('');
+    if(!provider||!tokenAddress){setWalletAssetMessage('Wallet provider is not available.');return}
+    try{
+      const added=await provider.request({method:'wallet_watchAsset',params:{type:'ERC20',options:{address:tokenAddress,symbol:symbol.trim().toUpperCase().slice(0,11),decimals:18}}});
+      setWalletAssetMessage(added?'Token added to your wallet.':'Wallet declined to add the token.');
+    }catch(err){setWalletAssetMessage(err?.message||'Could not add token to wallet.');}
+  };
   const launch=async()=>{
     setError('');
     if(confirmationUncertain){setError('Check the submitted transaction on BaseScan before retrying.');return}
@@ -218,7 +227,7 @@ export default function LaunchModal({onClose,privyConnect}){
       <p className="launch-disclaimer">Your wallet will ask you to sign and submit a real Base transaction. Never share your recovery phrase or private key.</p>
     </>:<>
       <div className="launch-heading"><div className="modal-icon"><Check size={22}/></div><div><h3 id="launch-title">Token <em>deployed.</em></h3><p>Clanker v5 launch confirmed on Base.</p></div></div>
-      <div className="launch-review-card launch-success"><div><small>CONTRACT ADDRESS</small><strong>{tokenAddress}</strong></div><button className="launch-copy" onClick={()=>copy(tokenAddress)}><Copy size={14}/>{copied?'Copied':'Copy address'}</button>{txHash&&<a href={'https://basescan.org/tx/'+txHash} target="_blank" rel="noreferrer"><ExternalLink size={14}/> View transaction on BaseScan</a>}<a href={'https://www.clanker.world/clanker/'+tokenAddress} target="_blank" rel="noreferrer"><ExternalLink size={14}/> Open token on Clanker</a></div>
+      <div className="launch-review-card launch-success"><div><small>CONTRACT ADDRESS</small><strong>{tokenAddress}</strong></div><button className="launch-copy" onClick={()=>copy(tokenAddress)}><Copy size={14}/>{copied?'Copied':'Copy address'}</button><button className="launch-copy" onClick={addTokenToWallet}><Wallet size={14}/> Add to wallet</button>{walletAssetMessage&&<p className="launch-status" role="status">{walletAssetMessage}</p>}{txHash&&<a href={'https://basescan.org/tx/'+txHash} target="_blank" rel="noreferrer"><ExternalLink size={14}/> View transaction on BaseScan</a>}<a href={'https://www.clanker.world/clanker/'+tokenAddress} target="_blank" rel="noreferrer"><ExternalLink size={14}/> Open token on Clanker</a></div>
       <button className="primary-cta launch-next" onClick={onClose}>Done <Check size={16}/></button>
     </>}
   </section></div>;
