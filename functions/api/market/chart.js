@@ -5,6 +5,7 @@ const json = (data, status = 200, cache = "public, max-age=20, s-maxage=30") => 
 
 const CHAINS = {
   BASE: "base", "8453": "base",
+  BSC: "bsc", BNB: "bsc", "56": "bsc",
   SOLANA: "solana",
   ETH: "ethereum", ETHEREUM: "ethereum", "1": "ethereum"
 };
