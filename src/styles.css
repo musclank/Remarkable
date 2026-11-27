@@ -276,3 +276,10 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 
 
 .footer-links{display:flex;flex-wrap:wrap;gap:12px 18px;justify-content:center}.footer-links a{color:var(--muted);font-size:12px;transition:color .2s}.footer-links a:hover{color:var(--lime)}@media(max-width:700px){.footer-links{justify-content:flex-start}}
+
+/* Network-aware token detail actions */
+.detail-trade-links{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0 3px}
+.detail-trade-links a{display:inline-flex;align-items:center;gap:7px;border:1px solid #34404b;border-radius:7px;padding:9px 11px;color:#b5ff6d;font-size:10px;font-weight:700;transition:background .2s,border-color .2s}
+.detail-trade-links a:hover{background:#b5ff6d12;border-color:#b5ff6d66}
+.detail-trade-links a svg{flex:none}
+@media(max-width:480px){.detail-trade-links a{flex:1;justify-content:center;min-width:130px}}
