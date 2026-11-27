@@ -58,3 +58,9 @@
  .how-actions .primary-cta,.how-secondary{justify-content:center;padding:12px 10px;font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){.how-step{transition:none}.how-step:hover{transform:none}}
+
+/* Step-level calls to action */
+.how-step-cta{display:inline-flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin-top:15px;padding:11px 12px;border:1px solid #b5ff6d2e;border-radius:9px;background:#b5ff6d08;color:#c8f99d;font:inherit;font-size:10px;font-weight:800;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.how-step-cta:hover{background:#b5ff6d14;border-color:#b5ff6d70;transform:translateY(-1px)}
+.how-step-cta:focus-visible{outline:2px solid #b5ff6d;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.how-step-cta{transition:none}.how-step-cta:hover{transform:none}}
