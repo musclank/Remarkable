@@ -435,3 +435,8 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
   .wallet-btn span{font-size:10px}
   .nav{top:100px}
 }
+
+
+/* Let in-page anchors scroll the document instead of a clipped app wrapper */
+.app{overflow:clip}
+#community{scroll-margin-top:24px}
