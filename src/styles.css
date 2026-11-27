@@ -323,7 +323,7 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 .eyebrow{animation:rm-eyebrow-pulse 7s ease-in-out infinite}
 .info-modal h3,.swap-modal h3,.launch-heading h3,.detail-heading h3{animation:rm-modal-title-in .65s cubic-bezier(.2,.75,.2,1) both,rm-title-flow 8s ease-in-out infinite .65s}
 .brand-mark .remarkable-mascot{transform-origin:50% 55%;animation:rm-mascot-orbit 4.8s ease-in-out infinite,rm-mascot-wink 6.4s ease-in-out infinite}
-.hero-mascot{transform-origin:50% 55%;animation:rm-mascot-bob 3.6s ease-in-out infinite,rm-mascot-wink 6.4s ease-in-out infinite}
+.hero-mascot{transform-origin:50% 55%;filter:drop-shadow(0 0 10px #b5ff6d18)}
 .brand-mark:hover .remarkable-mascot{animation:rm-mascot-orbit 1.2s ease-in-out infinite,rm-mascot-wink 3s ease-in-out infinite}
 .token-card{transition:transform .35s cubic-bezier(.2,.75,.2,1),border-color .3s,box-shadow .35s}
 .token-card:hover{transform:translateY(-5px) rotateX(1deg);box-shadow:0 18px 42px #0005,0 0 24px color-mix(in srgb,var(--token) 12%,transparent)}
