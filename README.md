@@ -37,7 +37,7 @@ The R lettermark has been replaced with an original vector mascot: a small lumin
 
 The launch wizard now offers BNB Smart Chain (chain ID 56) through Four.meme in addition to Base through Clanker v5. BSC uses Four.meme's documented nonce/sign-in, token image upload, signed create request, and TokenManager2 on-chain createToken flow. The connected wallet signs the login challenge and submits the transaction; no private key is stored by the site.
 
-Four.meme launch parameters are protocol-controlled. The wizard uses the current public `raisedToken` config, the documented Meme category, and the platform's published `lpTradingFee` setting. Optional Four.meme Tax Token settings support 1%, 3%, 5%, or 10% tax with burn, holder-dividend, liquidity, and recipient allocations totaling 100%. The app intentionally stops before submitting if Four.meme does not return its required signed payload or transaction value.
+Four.meme launch parameters are protocol-controlled. The wizard uses the current public `raisedToken` config, the documented Meme category, and the platform's published `lpTradingFee` setting. Optional Four.meme Tax Token settings support 1%, 3%, 5%, or 10% tax with burn, holder-dividend, liquidity, and recipient allocations totaling 100%. The app intentionally stops before submitting if Four.meme does not return its signed payload or the current on-chain launch fee cannot be read.
 
 Four.meme developer reference: https://github.com/four-meme-community/fourmeme-docs/blob/main/docs/create-guide.md
 Four.meme TokenManager2 on BSC: `0x5c952063c7fc8610FFDB798152D69F0B9550762b`
