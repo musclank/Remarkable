@@ -14,6 +14,8 @@ export default function LaunchModal({onClose}){
   const [description,setDescription]=useState('');
   const [website,setWebsite]=useState('');
   const [social,setSocial]=useState('');
+  const [buyTax,setBuyTax]=useState('1');
+  const [sellTax,setSellTax]=useState('1');
   const [image,setImage]=useState('');
   const [imageName,setImageName]=useState('');
   const [imageFile,setImageFile]=useState(null);
@@ -85,7 +87,10 @@ export default function LaunchModal({onClose}){
     if(!baseConnected)return 'Connect a wallet on Base mainnet first.';
     if(website&&!/^https?:\/\//i.test(website))return 'Website must start with https:// or http://.';
     if(social&&!/^https?:\/\//i.test(social))return 'Social link must start with https:// or http://.';
-    return '';
+    const buy=Number(buyTax),sell=Number(sellTax);
+    if(buyTax===''||!Number.isFinite(buy)||buy<0||buy>10)return 'Buy tax must be between 0% and 10%.';
+    if(sellTax===''||!Number.isFinite(sell)||sell<0||sell>10)return 'Sell tax must be between 0% and 10%.';
+    return ''; 
   };
   const review=event=>{event.preventDefault();const issue=validate();if(issue){setError(issue);return}setError('');setStep('review')};
 
@@ -118,8 +123,8 @@ export default function LaunchModal({onClose}){
         metadata:{description:description.trim(),socialMediaUrls},
         context:{interface:'Remarkable',platform:'Remarkable',messageId:'Web launch',id:symbol.trim().toUpperCase()},
         metadataEditable:true,
-        buyFee:1,
-        sellFee:1,
+        buyFee:Number(buyTax),
+        sellFee:Number(sellTax),
         pool:{pairedToken:ZERO_ADDRESS},
         rewards:{recipients:[{recipient:wallet,admin:wallet,bps:10000}]},
         antiSnipeEnabled:true
@@ -152,14 +157,15 @@ export default function LaunchModal({onClose}){
         <div className="launch-fields"><label><span>Token name</span><input value={name} onChange={e=>setName(e.target.value)} maxLength={50} placeholder="e.g. Remarkable" required/><small>{name.length}/50</small></label><label><span>Ticker</span><input value={symbol} onChange={e=>setSymbol(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''))} maxLength={25} placeholder="e.g. RMK" required/><small>{symbol.length}/25</small></label></div>
         <label className="launch-field"><span>Description <small>OPTIONAL</small></span><textarea value={description} onChange={e=>setDescription(e.target.value)} maxLength={500} rows={3} placeholder="What is your token about?"/></label>
         <div className="launch-fields"><label><span>Website <small>OPTIONAL</small></span><input type="url" value={website} onChange={e=>setWebsite(e.target.value)} placeholder="https://"/></label><label><span>X / social link <small>OPTIONAL</small></span><input type="url" value={social} onChange={e=>setSocial(e.target.value)} placeholder="https://x.com/"/></label></div>
+        <div className="launch-tax-section"><div className="launch-tax-heading"><strong>Tax settings</strong><small>Set token buy and sell tax</small></div><div className="launch-fields"><label><span>Buy tax (%)</span><input type="number" min="0" max="10" step="0.1" inputMode="decimal" value={buyTax} onChange={e=>setBuyTax(e.target.value)} required/><small>0–10%</small></label><label><span>Sell tax (%)</span><input type="number" min="0" max="10" step="0.1" inputMode="decimal" value={sellTax} onChange={e=>setSellTax(e.target.value)} required/><small>0–10%</small></label></div><p>Tax values are passed to Clanker v5 as buyFee and sellFee. Confirm the final fee behavior in your wallet before deploying.</p></div>
         <div className="launch-wallet-row"><div><small>DEPLOY WALLET</small><strong>{wallet?shortAddress(wallet):'Not connected'}</strong><span>{wallet?(baseConnected?'Connected · Base mainnet':'Connected · switch to Base'):'Connect to continue'}</span></div><button type="button" className="launch-connect" onClick={connect} disabled={connecting||launching}>{connecting?<LoaderCircle size={15} className="spin"/>:<Wallet size={15}/>} {connecting?'Connecting':wallet?(baseConnected?'Base connected':'Switch network'):'Connect wallet'}</button></div>
         {error&&<div className="launch-error" role="alert">{error}</div>}
-        <div className="launch-disclaimer">Clanker v5 launch settings: 1% buy tax, 1% sell tax, native ETH pool, 100% creator rewards, editable metadata and anti-sniping enabled. Review fees and network details before confirming.</div>
+        <div className="launch-disclaimer">Clanker v5 launch settings: {buyTax}% buy tax, {sellTax}% sell tax, native ETH pool, 100% creator rewards, editable metadata and anti-sniping enabled. Review fees and network details before confirming.</div>
         <button className="primary-cta launch-next" type="submit">Review launch <ArrowUpRight size={16}/></button>
       </form>
     </>:step==='review'?<>
       <div className="launch-heading"><div className="modal-icon">{image?<img src={image} alt=""/>:<ImagePlus size={22}/>}</div><div><h3 id="launch-title">Review your <em>launch.</em></h3><p>Logo and metadata will be uploaded and sent to Clanker SDK.</p></div></div>
-      <div className="launch-review-card"><div className="launch-token-preview">{image&&<img src={image} alt=""/>}<div><strong>{name}</strong><span>${symbol.toUpperCase()}</span></div></div><p>{description||'No description added.'}</p><dl><div><dt>Network</dt><dd>Base mainnet</dd></div><div><dt>Protocol</dt><dd>Clanker v5 SDK</dd></div><div><dt>Pool pair</dt><dd>ETH</dd></div><div><dt>Buy / sell tax</dt><dd>1% / 1%</dd></div><div><dt>Creator rewards</dt><dd>100% to your wallet</dd></div><div><dt>Anti-sniping</dt><dd>Enabled</dd></div></dl>{website&&<a href={website} target="_blank" rel="noreferrer"><ExternalLink size={13}/> Website</a>}{social&&<a href={social} target="_blank" rel="noreferrer"><ExternalLink size={13}/> Social</a>}</div>
+      <div className="launch-review-card"><div className="launch-token-preview">{image&&<img src={image} alt=""/>}<div><strong>{name}</strong><span>${symbol.toUpperCase()}</span></div></div><p>{description||'No description added.'}</p><dl><div><dt>Network</dt><dd>Base mainnet</dd></div><div><dt>Protocol</dt><dd>Clanker v5 SDK</dd></div><div><dt>Pool pair</dt><dd>ETH</dd></div><div><dt>Buy / sell tax</dt><dd>{buyTax}% / {sellTax}%</dd></div><div><dt>Creator rewards</dt><dd>100% to your wallet</dd></div><div><dt>Anti-sniping</dt><dd>Enabled</dd></div></dl>{website&&<a href={website} target="_blank" rel="noreferrer"><ExternalLink size={13}/> Website</a>}{social&&<a href={social} target="_blank" rel="noreferrer"><ExternalLink size={13}/> Social</a>}</div>
       {error&&<div className="launch-error" role="alert">{error}</div>}
       {status&&<div className="launch-status" role="status">{launching&&<LoaderCircle size={15} className="spin"/>}{status}</div>}
       <div className="launch-review-actions"><button className="launch-back" onClick={()=>{setStep('edit');setError('');setStatus('')}} disabled={launching}><ArrowLeft size={15}/> Edit details</button><button className="primary-cta" onClick={launch} disabled={launching}>{launching?<LoaderCircle size={15} className="spin"/>:<ArrowUpRight size={16}/>} {launching?'Launching…':'Deploy with Clanker SDK'}</button></div>
