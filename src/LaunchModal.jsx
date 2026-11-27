@@ -124,9 +124,11 @@ export default function LaunchModal({onClose}){
       if(Number(bscRecipientRate)>0&&!/^0x[a-fA-F0-9]{40}$/.test(bscRecipientAddress))return 'Enter a valid tax recipient wallet address.';
       if(!/^\d+$/.test(bscMinSharing)||Number(bscMinSharing)<100000)return 'Minimum holder balance must be at least 100000 token base units.';
     }
-    if(rewardRecipients.some(item=>!/^0x[a-fA-F0-9]{40}$/.test(item.recipient)||!/^0x[a-fA-F0-9]{40}$/.test(item.admin)))return 'Enter valid admin and recipient wallet addresses for every reward split.';
-    if(rewardRecipients.some(item=>item.percent===''||!Number.isFinite(Number(item.percent))||Number(item.percent)<=0||Number(item.percent)>100))return 'Each additional reward share must be above 0% and up to 100%.';
-    if(additionalRewardPercent>100)return 'Reward shares cannot exceed 100%.';
+    if(network==='base'){
+      if(rewardRecipients.some(item=>!/^0x[a-fA-F0-9]{40}$/.test(item.recipient)||!/^0x[a-fA-F0-9]{40}$/.test(item.admin)))return 'Enter valid admin and recipient wallet addresses for every reward split.';
+      if(rewardRecipients.some(item=>item.percent===''||!Number.isFinite(Number(item.percent))||Number(item.percent)<=0||Number(item.percent)>100))return 'Each additional reward share must be above 0% and up to 100%.';
+      if(additionalRewardPercent>100)return 'Reward shares cannot exceed 100%.';
+    }
     return '';  
   };
   const review=event=>{event.preventDefault();const issue=validate();if(issue){setError(issue);return}setError('');setStep('review')};
@@ -151,7 +153,7 @@ export default function LaunchModal({onClose}){
         const configResponse=await fetch(`${FOUR_MEME_API}/public/config`);const configJson=await configResponse.json();
         if(!configResponse.ok||String(configJson.code)!=='0')throw new Error('Could not load Four.meme public launch configuration.');
         const raisedToken=configJson.data?.raisedToken;if(!raisedToken)throw new Error('Four.meme public config did not include raisedToken; launch stopped safely.');
-        const createBody={name:name.trim(),shortName:symbol.trim().toUpperCase(),desc:description.trim(),imgUrl:uploadJson.data,launchTime:Date.now(),label:'Meme',lpTradingFee:0.0025,raisedAmount:24,raisedToken,webUrl:website.trim(),twitterUrl:social.trim(),preSale:0,feePlan:false};
+        const createBody={name:name.trim(),shortName:symbol.trim().toUpperCase(),desc:description.trim(),imgUrl:uploadJson.data,launchTime:Date.now(),label:'Meme',lpTradingFee:0.0025,raisedAmount:24,raisedToken,preSale:0,feePlan:false};if(website.trim())createBody.webUrl=website.trim();if(social.trim())createBody.twitterUrl=social.trim();
         if(bscTaxEnabled)createBody.tokenTaxInfo={feeRate:Number(bscTaxRate),burnRate:Number(bscBurnRate),divideRate:Number(bscDivideRate),liquidityRate:Number(bscLiquidityRate),recipientRate:Number(bscRecipientRate),recipientAddress:Number(bscRecipientRate)>0?bscRecipientAddress:'',minSharing:Number(bscMinSharing)};
         setStatus('Preparing Four.meme signed launch request…');const signed=await apiPost('/private/token/create',createBody,{'meme-web-access':accessToken});
         if(!signed?.createArg||!signed?.signature)throw new Error('Four.meme did not return a signed create payload.');
