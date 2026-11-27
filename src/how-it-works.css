@@ -1,0 +1,60 @@
+/* How it works: clear three-step launch journey */
+.how-section{
+  max-width:1204px;
+  margin:0 auto 100px;
+  padding:76px 0 0;
+  border-top:1px solid var(--line);
+}
+.how-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:34px}
+.how-heading h2{font-size:clamp(42px,5vw,66px);letter-spacing:-.075em;line-height:1.02;margin:18px 0 13px}
+.how-heading h2 em{font-family:Georgia,serif;font-weight:400;color:var(--acid);letter-spacing:-.07em}
+.how-heading>div>p{margin:0;color:#929ba6;font-size:13px;line-height:1.7}
+.how-index{font:10px 'DM Mono',monospace;letter-spacing:.13em;color:#77838e;padding-bottom:7px;white-space:nowrap}
+.how-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;position:relative}
+.how-step{position:relative;min-width:0;overflow:hidden;padding:24px 23px 19px;border:1px solid #26313b;border-radius:15px;background:linear-gradient(145deg,rgba(19,29,39,.92),rgba(9,14,21,.88));transition:transform .25s ease,border-color .25s ease,background .25s ease}
+.how-step:hover{transform:translateY(-5px);border-color:#526344;background:linear-gradient(145deg,rgba(25,39,47,.96),rgba(9,14,21,.92))}
+.how-step::after{content:"";position:absolute;right:-58px;top:-72px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#b5ff6d12,transparent 68%);pointer-events:none}
+.how-step-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:27px}
+.how-number{font:11px 'DM Mono',monospace;letter-spacing:.1em;color:#8995a1}
+.how-icon{display:grid;place-items:center;width:46px;height:46px;border:1px solid #b5ff6d30;border-radius:13px;background:#b5ff6d0d;color:var(--acid);box-shadow:inset 0 0 20px #b5ff6d08}
+.how-step-kicker{font:9px 'DM Mono',monospace;letter-spacing:.15em;color:#8b96a2;margin-bottom:12px}
+.how-step h3{font-size:clamp(25px,2.6vw,34px);line-height:1.05;letter-spacing:-.065em;margin:0 0 15px;font-weight:750}
+.how-step h3 em{font-family:Georgia,serif;font-weight:400;color:var(--acid);letter-spacing:-.06em}
+.how-step>p{min-height:68px;margin:0;color:#98a2ad;font-size:12px;line-height:1.8;max-width:300px}
+.how-step-foot{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:14px;border-top:1px solid #ffffff0c;font:8px 'DM Mono',monospace;letter-spacing:.13em;color:#697681}
+.how-foot-dot{width:6px;height:6px;border-radius:50%;background:var(--acid);box-shadow:0 0 10px #b5ff6d66}
+.how-bottom{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:18px;padding:22px 24px;border:1px solid #28343d;border-radius:14px;background:linear-gradient(100deg,#121b23,#0c1219)}
+.how-bottom>div:first-child{display:grid;gap:7px}
+.how-bottom strong{font-size:14px;letter-spacing:-.025em}
+.how-bottom>div:first-child>span{font-size:11px;color:#8e99a4}
+.how-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.how-actions .primary-cta{padding:12px 15px;font-size:11px}
+.how-secondary{display:inline-flex;align-items:center;gap:8px;padding:11px 13px;background:transparent;border:1px solid #34404a;border-radius:8px;color:#c4cbd2;font-size:11px;font-weight:700}
+.how-secondary:hover{border-color:#7b8d68;color:white}
+@media(max-width:900px){
+ .how-section{margin:0 24px 78px;padding-top:58px}
+ .how-steps{gap:10px}
+ .how-step{padding:20px 17px 17px}
+ .how-step h3{font-size:27px}
+ .how-step>p{font-size:11px}
+ .how-bottom{padding:19px}
+}
+@media(max-width:640px){
+ .how-section{margin:0 18px 58px;padding-top:48px}
+ .how-heading{align-items:flex-start;margin-bottom:24px}
+ .how-heading h2{font-size:clamp(39px,12vw,52px);margin-top:15px}
+ .how-heading>div>p{font-size:12px;max-width:290px}
+ .how-index{font-size:8px;padding-top:4px}
+ .how-steps{grid-template-columns:1fr;gap:10px}
+ .how-step{padding:19px 19px 16px}
+ .how-step-top{margin-bottom:19px}
+ .how-step h3{font-size:29px}
+ .how-step>p{min-height:0;max-width:360px;font-size:12px}
+ .how-step-foot{margin-top:19px}
+ .how-bottom{display:block;margin-top:12px;padding:20px 18px}
+ .how-bottom strong{font-size:13px}
+ .how-bottom>div:first-child>span{font-size:10px;line-height:1.6}
+ .how-actions{margin-top:17px;display:grid;grid-template-columns:1fr 1fr}
+ .how-actions .primary-cta,.how-secondary{justify-content:center;padding:12px 10px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.how-step{transition:none}.how-step:hover{transform:none}}
