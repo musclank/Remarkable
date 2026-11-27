@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {PrivyProvider,usePrivy,useWallets,useCreateWallet} from '@privy-io/react-auth';
+import {PrivyProvider,usePrivy,useWallets,useCreateWallet,getEmbeddedConnectedWallet} from '@privy-io/react-auth';
 import {ArrowUpRight,Check,LogOut,Wallet,X} from 'lucide-react';
 import LaunchModal from './LaunchModal.jsx';
 
@@ -18,7 +18,8 @@ export function PrivyLaunchModal({onClose}){
   const connect=async()=>{
     if(!ready)throw new Error('Privy is still initializing. Please try again.');
     if(!authenticated){await login();return null;}
-    let wallet=wallets.find(item=>item.chainType==='ethereum'&&item.walletClientType==='privy');
+    const linkedWalletAddress=user?.linkedAccounts?.find(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')?.address||user?.wallet?.address||'';
+    let wallet=getEmbeddedConnectedWallet(wallets)||wallets.find(item=>linkedWalletAddress&&item.address?.toLowerCase()===linkedWalletAddress.toLowerCase())||wallets.find(item=>item.walletClientType==='privy'&&item.chainType==='ethereum');
     if(!wallet){
       const existing=user?.linkedAccounts?.some(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')||(user?.wallet?.walletClientType==='privy'&&user?.wallet?.chainType==='ethereum');
       if(!existing){
@@ -43,7 +44,8 @@ export function PrivyWalletPanel({onClose}){
   const {wallets}=useWallets();
   const [busy,setBusy]=useState(false);
   const [exportError,setExportError]=useState('');
-  const embeddedWallet=wallets.find(item=>item.chainType==='ethereum'&&item.walletClientType==='privy');
+  const linkedWalletAddress=user?.linkedAccounts?.find(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')?.address||user?.wallet?.address||'';
+  const embeddedWallet=getEmbeddedConnectedWallet(wallets)||wallets.find(item=>linkedWalletAddress&&item.address?.toLowerCase()===linkedWalletAddress.toLowerCase())||wallets.find(item=>item.walletClientType==='privy'&&item.chainType==='ethereum');
   const hasEmbeddedEthereumWallet=!!embeddedWallet||!!user?.linkedAccounts?.some(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')||(user?.wallet?.walletClientType==='privy'&&user?.wallet?.chainType==='ethereum');
   const address=embeddedWallet?.address||user?.linkedAccounts?.find(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')?.address||user?.wallet?.address||'';
   const short=value=>value?value.slice(0,6)+'…'+value.slice(-4):'';
