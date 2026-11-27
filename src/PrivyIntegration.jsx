@@ -17,8 +17,8 @@ export function PrivyLaunchModal({onClose}){
   const connect=async()=>{
     if(!ready)throw new Error('Privy is still initializing. Please try again.');
     if(!authenticated){await login();return null;}
-    const wallet=wallets.find(item=>item.chainType==='ethereum'&&item.walletClientType==='privy')||wallets.find(item=>item.chainType==='ethereum');
-    if(!wallet){await login();return null;}
+    const wallet=wallets.find(item=>item.chainType==='ethereum'&&item.walletClientType==='privy');
+    if(!wallet)throw new Error('Your Privy embedded wallet is still being created. Please close and reopen the wallet panel in a moment.');
     const provider=await wallet.getEthereumProvider();
     return {wallet,provider};
   };
