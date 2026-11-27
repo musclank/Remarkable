@@ -8,7 +8,7 @@ const BASE_CHAIN='0x2105';
 const BSC_CHAIN='0x38';
 const FOUR_MEME_MANAGER='0x5c952063c7fc8610FFDB798152D69F0B9550762b';
 const FOUR_MEME_API='https://four.meme/meme-api/v1';
-const FOUR_MEME_CREATE_ABI=[{type:'function',name:'createToken',stateMutability:'payable',inputs:[{name:'args',type:'bytes'},{name:'signature',type:'bytes'}],outputs:[]},{type:'event',name:'TokenCreate',anonymous:false,inputs:[{name:'creator',type:'address',indexed:true},{name:'token',type:'address',indexed:true},{name:'requestId',type:'uint256',indexed:false},{name:'name',type:'string',indexed:false},{name:'symbol',type:'string',indexed:false},{name:'totalSupply',type:'uint256',indexed:false},{name:'launchTime',type:'uint256',indexed:false},{name:'launchFee',type:'uint256',indexed:false}]}];
+const FOUR_MEME_CREATE_ABI=[{type:'function',name:'_launchFee',stateMutability:'view',inputs:[],outputs:[{type:'uint256'}]},{type:'function',name:'createToken',stateMutability:'payable',inputs:[{name:'args',type:'bytes'},{name:'signature',type:'bytes'}],outputs:[]},{type:'event',name:'TokenCreate',anonymous:false,inputs:[{name:'creator',type:'address',indexed:true},{name:'token',type:'address',indexed:true},{name:'requestId',type:'uint256',indexed:false},{name:'name',type:'string',indexed:false},{name:'symbol',type:'string',indexed:false},{name:'totalSupply',type:'uint256',indexed:false},{name:'launchTime',type:'uint256',indexed:false},{name:'launchFee',type:'uint256',indexed:false}]}];
 const ZERO_ADDRESS='0x0000000000000000000000000000000000000000';
 const WETH_BASE='0x4200000000000000000000000000000000000006';
 const USDC_BASE='0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
@@ -155,7 +155,8 @@ export default function LaunchModal({onClose}){
         if(bscTaxEnabled)createBody.tokenTaxInfo={feeRate:Number(bscTaxRate),burnRate:Number(bscBurnRate),divideRate:Number(bscDivideRate),liquidityRate:Number(bscLiquidityRate),recipientRate:Number(bscRecipientRate),recipientAddress:Number(bscRecipientRate)>0?bscRecipientAddress:'',minSharing:Number(bscMinSharing)};
         setStatus('Preparing Four.meme signed launch request…');const signed=await apiPost('/private/token/create',createBody,{'meme-web-access':accessToken});
         if(!signed?.createArg||!signed?.signature)throw new Error('Four.meme did not return a signed create payload.');
-        const txValue=signed.creationFeeWei??signed.launchFeeWei??signed.value;if(txValue===undefined||txValue===null)throw new Error('Four.meme response did not provide the required transaction value. No on-chain transaction was sent.');
+        let txValue=signed.creationFeeWei??signed.launchFeeWei??signed.value;
+        if(txValue===undefined||txValue===null){const feeClient=createPublicClient({chain:bsc,transport:http()});txValue=await feeClient.readContract({address:FOUR_MEME_MANAGER,abi:FOUR_MEME_CREATE_ABI,functionName:'_launchFee'});}
         if((await provider.request({method:'eth_chainId'})).toLowerCase()!==BSC_CHAIN)throw new Error('Wallet network changed. Switch back to BNB Smart Chain and retry.');
         setStatus('Submit the Four.meme token creation transaction in your wallet…');const txHash=await walletClient.writeContract({address:FOUR_MEME_MANAGER,abi:FOUR_MEME_CREATE_ABI,functionName:'createToken',args:[signed.createArg,signed.signature],value:BigInt(txValue)});
         setTxHash(txHash);setStatus('Transaction submitted. Waiting for BSC confirmation…');const publicClient=createPublicClient({chain:bsc,transport:http()});const receipt=await publicClient.waitForTransactionReceipt({hash:txHash});
