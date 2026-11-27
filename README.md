@@ -65,3 +65,7 @@ Token logo files are pinned to IPFS through `functions/api/launch/upload.js`. Co
 
 Official SDK: https://github.com/clanker-devco/clanker-sdk
 Clanker v5 documentation: https://github.com/clanker-devco/DOCS/blob/main/references/core-contracts/v5.md
+
+## DEX swap handoff
+
+The explorer includes a DEX Swap modal for BNB Chain and Base. BNB Chain opens the official PancakeSwap app; Base opens the official Uniswap app. Token contract addresses from supported EVM token detail views can be prefilled. REMARKABLE does not custody funds or execute trades in its own app; users review and sign every transaction in the DEX and their wallet. Solana tokens are not routed through this EVM swap flow.
