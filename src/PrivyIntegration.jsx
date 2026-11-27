@@ -91,11 +91,11 @@ export function PrivyPortfolioPanel({onClose}){
   const {wallets}=useWallets();
   const [network,setNetwork]=useState('base'),[refreshTick,setRefreshTick]=useState(0),[balance,setBalance]=useState(''),[loading,setLoading]=useState(false),[error,setError]=useState('');
   const [addressCopied,setAddressCopied]=useState(false);
-  const copyPortfolioAddress=async()=>{try{await navigator.clipboard.writeText(address);setAddressCopied(true);setTimeout(()=>setAddressCopied(false),1800)}catch{setError('Could not copy address. Select and copy it manually.')}};
-  const explorerUrl=network==='base'?'https://basescan.org/address/'+address:network==='ethereum'?'https://etherscan.io/address/'+address:'https://bscscan.com/address/'+address;
+  const copyPortfolioAddress=async()=>{if(!address)return;try{await navigator.clipboard.writeText(address);setAddressCopied(true);setTimeout(()=>setAddressCopied(false),1800)}catch{setError('Could not copy address. Select and copy it manually.')}};
   const linkedAddress=user?.linkedAccounts?.find(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')?.address||user?.wallet?.address||'';
   const wallet=getEmbeddedConnectedWallet(wallets)||wallets.find(item=>linkedAddress&&item.address?.toLowerCase()===linkedAddress.toLowerCase())||wallets.find(item=>item.walletClientType==='privy'&&item.chainType==='ethereum');
   const address=wallet?.address||linkedAddress;
+  const explorerUrl=network==='base'?'https://basescan.org/address/'+address:network==='ethereum'?'https://etherscan.io/address/'+address:'https://bscscan.com/address/'+address;
   const networks={ethereum:{name:'Ethereum',symbol:'ETH',rpc:'https://ethereum-rpc.publicnode.com'},base:{name:'Base',symbol:'ETH',rpc:'https://base-rpc.publicnode.com'},bsc:{name:'BNB Chain',symbol:'BNB',rpc:'https://bsc-rpc.publicnode.com'}};
   useEffect(()=>{
     if(!ready||!authenticated||!address){setBalance('');return;}
