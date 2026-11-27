@@ -70,3 +70,15 @@ export function PrivyWalletPanel({onClose}){
     <button className="swap-cancel" onClick={onClose}><X size={14}/> Close</button>
   </div>;
 }
+
+
+export function PrivyWalletButton({onClick}){
+  const {ready,authenticated,user}=usePrivy();
+  const {wallets}=useWallets();
+  const linkedAddress=user?.linkedAccounts?.find(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')?.address||user?.wallet?.address||'';
+  const wallet=getEmbeddedConnectedWallet(wallets)||wallets.find(item=>linkedAddress&&item.address?.toLowerCase()===linkedAddress.toLowerCase())||wallets.find(item=>item.walletClientType==='privy'&&item.chainType==='ethereum');
+  const address=wallet?.address||linkedAddress;
+  const short=value=>value?value.slice(0,6)+'…'+value.slice(-4):'';
+  const label=!ready?'Loading wallet…':authenticated?(short(address)||'Wallet connected'):'Connect wallet';
+  return <button className="wallet-btn" onClick={onClick} aria-label={authenticated?'Open connected wallet':'Connect wallet'} title={address||'Connect wallet'}><Wallet size={16}/><span>{label}</span></button>;
+}
