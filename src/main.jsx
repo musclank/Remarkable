@@ -6,6 +6,7 @@ import {ArrowUpRight,Search,Wallet,Plus,Flame,Sparkles,Bookmark,Menu,X,ChevronDo
 import './styles.css';
 import './how-it-works.css';
 import './explorer-controls.css';
+import './portfolio.css';
 import {loadMarketTokens} from './market.js';
 import LaunchModal from './LaunchModal.jsx';
 import SwapModal from './SwapModal.jsx';
