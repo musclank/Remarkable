@@ -33,6 +33,7 @@ export default function LaunchModal({onClose,privyConnect}){
   const [txHash,setTxHash]=useState('');
   const [tokenAddress,setTokenAddress]=useState('');
   const [copied,setCopied]=useState(false);
+  const [confirmationUncertain,setConfirmationUncertain]=useState(false);
 
   const [provider,setProvider]=useState(typeof window!=='undefined'?window.ethereum||null:null);
   const baseConnected=Boolean(wallet&&chainId?.toLowerCase()===BASE_CHAIN);
@@ -126,6 +127,8 @@ export default function LaunchModal({onClose,privyConnect}){
   const copy=async value=>{try{await navigator.clipboard.writeText(value);setCopied(true)}catch{setError('Clipboard access was blocked.')}};
   const launch=async()=>{
     setError('');
+    if(confirmationUncertain){setError('Check the submitted transaction on BaseScan before retrying.');return}
+    let submittedHash='';
     if(!provider||!baseConnected){setError('Connect your wallet on Base before launching.');return}
     setLaunching(true);
     setTxHash('');
@@ -164,7 +167,8 @@ export default function LaunchModal({onClose,privyConnect}){
       setStatus('Preparing Clanker v5 launch. Confirm the transaction in your wallet…');
       const submission=await sdk.deploy(tokenConfig);
       if(submission.error)throw submission.error;
-      setTxHash(submission.txHash);
+      submittedHash=submission.txHash;
+      setTxHash(submittedHash);
       setStatus('Transaction submitted. Waiting for Base confirmation…');
       const result=await submission.waitForTransaction();
       if(result.error)throw result.error;
@@ -173,8 +177,14 @@ export default function LaunchModal({onClose,privyConnect}){
       setStep('success');
     }catch(err){
       const message=err?.shortMessage||err?.message||String(err);
-      setError(message.includes('User rejected')||message.includes('denied')?'Transaction was rejected in your wallet.':message);
-      setStatus('');
+      if(submittedHash){
+        setConfirmationUncertain(true);
+        setStatus('Transaction was submitted, but confirmation could not be verified here. Check BaseScan before attempting another launch.');
+        setError('Do not retry yet: the transaction may already have succeeded.');
+      }else{
+        setError(message.includes('User rejected')||message.includes('denied')?'Transaction was rejected in your wallet.':message);
+        setStatus('');
+      }
     }finally{setLaunching(false)}
   };
 
@@ -203,7 +213,7 @@ export default function LaunchModal({onClose,privyConnect}){
       {error&&<div className="launch-error" role="alert">{error}</div>}
       {status&&<div className="launch-status" role="status">{launching&&<LoaderCircle size={15} className="spin"/>}{status}</div>}
       {txHash&&<a className="explorer-link launch-transaction-link" href={'https://basescan.org/tx/'+txHash} target="_blank" rel="noreferrer"><ExternalLink size={14}/> {launching?'Track pending transaction on BaseScan':'View submitted transaction on BaseScan'}</a>}
-      <div className="launch-review-actions"><button className="launch-back" onClick={()=>{setStep('edit');setError('');setStatus('')}} disabled={launching}><ArrowLeft size={15}/> Edit details</button><button className="primary-cta" onClick={launch} disabled={launching}>{launching?<LoaderCircle size={15} className="spin"/>:<ArrowUpRight size={16}/>} {launching?'Launching…':'Deploy with Clanker SDK'}</button></div>
+      <div className="launch-review-actions"><button className="launch-back" onClick={()=>{setStep('edit');setError('');setStatus('')}} disabled={launching}><ArrowLeft size={15}/> Edit details</button><button className="primary-cta" onClick={launch} disabled={launching||confirmationUncertain}>{launching?<LoaderCircle size={15} className="spin"/>:<ArrowUpRight size={16}/>} {launching?'Launching…':confirmationUncertain?'Check BaseScan before retry':'Deploy with Clanker SDK'}</button></div>
       <p className="launch-disclaimer">Your wallet will ask you to sign and submit a real Base transaction. Never share your recovery phrase or private key.</p>
     </>:<>
       <div className="launch-heading"><div className="modal-icon"><Check size={22}/></div><div><h3 id="launch-title">Token <em>deployed.</em></h3><p>Clanker v5 launch confirmed on Base.</p></div></div>
