@@ -6,6 +6,8 @@ import {Clanker} from 'clanker-sdk/v5';
 
 const BASE_CHAIN='0x2105';
 const ZERO_ADDRESS='0x0000000000000000000000000000000000000000';
+const WETH_BASE='0x4200000000000000000000000000000000000006';
+const USDC_BASE='0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const shortAddress=value=>value?value.slice(0,6)+'…'+value.slice(-4):'';
 
 export default function LaunchModal({onClose}){
@@ -16,6 +18,8 @@ export default function LaunchModal({onClose}){
   const [social,setSocial]=useState('');
   const [buyTax,setBuyTax]=useState('1');
   const [sellTax,setSellTax]=useState('1');
+  const [poolToken,setPoolToken]=useState(ZERO_ADDRESS);
+  const [rewardRecipients,setRewardRecipients]=useState([]);
   const [image,setImage]=useState('');
   const [imageName,setImageName]=useState('');
   const [imageFile,setImageFile]=useState(null);
@@ -80,6 +84,11 @@ export default function LaunchModal({onClose}){
     reader.readAsDataURL(file);
   };
 
+  const addRewardRecipient=()=>setRewardRecipients(items=>items.length<6?[...items,{recipient:'',admin:'',percent:'0'}]:items);
+  const updateRewardRecipient=(index,key,value)=>setRewardRecipients(items=>items.map((item,i)=>i===index?{...item,[key]:value}:item));
+  const removeRewardRecipient=index=>setRewardRecipients(items=>items.filter((_,i)=>i!==index));
+  const additionalRewardPercent=rewardRecipients.reduce((sum,item)=>sum+(Number(item.percent)||0),0);
+  const creatorRewardPercent=100-additionalRewardPercent;
   const validate=()=>{
     if(name.trim().length<2||name.trim().length>50)return 'Token name must be 2–50 characters.';
     if(!/^[a-zA-Z0-9]{2,25}$/.test(symbol.trim()))return 'Ticker must be 2–25 letters or numbers.';
@@ -90,7 +99,10 @@ export default function LaunchModal({onClose}){
     const buy=Number(buyTax),sell=Number(sellTax);
     if(buyTax===''||!Number.isFinite(buy)||buy<0||buy>10)return 'Buy tax must be between 0% and 10%.';
     if(sellTax===''||!Number.isFinite(sell)||sell<0||sell>10)return 'Sell tax must be between 0% and 10%.';
-    return ''; 
+    if(rewardRecipients.some(item=>!/^0x[a-fA-F0-9]{40}$/.test(item.recipient)||!/^0x[a-fA-F0-9]{40}$/.test(item.admin)))return 'Enter valid admin and recipient wallet addresses for every reward split.';
+    if(rewardRecipients.some(item=>item.percent===''||!Number.isFinite(Number(item.percent))||Number(item.percent)<=0||Number(item.percent)>100))return 'Each additional reward share must be above 0% and up to 100%.';
+    if(additionalRewardPercent>100)return 'Reward shares cannot exceed 100%.';
+    return '';  
   };
   const review=event=>{event.preventDefault();const issue=validate();if(issue){setError(issue);return}setError('');setStep('review')};
 
@@ -125,8 +137,8 @@ export default function LaunchModal({onClose}){
         metadataEditable:true,
         buyFee:Number(buyTax),
         sellFee:Number(sellTax),
-        pool:{pairedToken:ZERO_ADDRESS},
-        rewards:{recipients:[{recipient:wallet,admin:wallet,bps:10000}]},
+        pool:{pairedToken:poolToken},
+        rewards:{recipients:[{recipient:wallet,admin:wallet,bps:Math.round(creatorRewardPercent*100)},...rewardRecipients.map(item=>({recipient:item.recipient,admin:item.admin,bps:Math.round(Number(item.percent)*100)}))]},
         antiSnipeEnabled:true
       };
       setStatus('Preparing Clanker v5 launch. Confirm the transaction in your wallet…');
@@ -157,15 +169,17 @@ export default function LaunchModal({onClose}){
         <div className="launch-fields"><label><span>Token name</span><input value={name} onChange={e=>setName(e.target.value)} maxLength={50} placeholder="e.g. Remarkable" required/><small>{name.length}/50</small></label><label><span>Ticker</span><input value={symbol} onChange={e=>setSymbol(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''))} maxLength={25} placeholder="e.g. RMK" required/><small>{symbol.length}/25</small></label></div>
         <label className="launch-field"><span>Description <small>OPTIONAL</small></span><textarea value={description} onChange={e=>setDescription(e.target.value)} maxLength={500} rows={3} placeholder="What is your token about?"/></label>
         <div className="launch-fields"><label><span>Website <small>OPTIONAL</small></span><input type="url" value={website} onChange={e=>setWebsite(e.target.value)} placeholder="https://"/></label><label><span>X / social link <small>OPTIONAL</small></span><input type="url" value={social} onChange={e=>setSocial(e.target.value)} placeholder="https://x.com/"/></label></div>
+        <div className="launch-pool-section"><div className="launch-tax-heading"><strong>Liquidity pool</strong><small>Choose the quote asset for your Clanker v5 pool</small></div><label className="launch-field"><span>Pool pair</span><select value={poolToken} onChange={e=>setPoolToken(e.target.value)}><option value={ZERO_ADDRESS}>Native ETH</option><option value={WETH_BASE}>WETH</option><option value={USDC_BASE}>USDC</option></select></label><p>The pool is created by Clanker. Pair availability follows Clanker's supported quote tokens on Base.</p></div>
+        <div className="launch-rewards-section"><div className="launch-tax-heading"><strong>Reward distribution</strong><small>Split creator rewards between wallets</small></div><div className="launch-reward-row"><div><strong>Your wallet</strong><small>{wallet?shortAddress(wallet):'Connect wallet'} · creator/admin slot</small></div><label><span>Share (%)</span><input type="number" min="0" max="100" step="0.1" value={Math.max(0,creatorRewardPercent).toFixed(1)} readOnly/><small>Auto remainder</small></label></div>{rewardRecipients.map((item,index)=><div className="launch-reward-recipient" key={index}><div className="launch-reward-fields"><label><span>Recipient wallet</span><input value={item.recipient} onChange={e=>updateRewardRecipient(index,'recipient',e.target.value.trim())} placeholder="0x..."/></label><label><span>Admin wallet</span><input value={item.admin} onChange={e=>updateRewardRecipient(index,'admin',e.target.value.trim())} placeholder="0x..."/></label><label><span>Share (%)</span><input type="number" min="0.1" max="100" step="0.1" value={item.percent} onChange={e=>updateRewardRecipient(index,'percent',e.target.value)}/></label><button type="button" className="launch-remove-recipient" onClick={()=>removeRewardRecipient(index)}>Remove</button></div></div>)}<div className="launch-reward-total"><span>Creator wallet</span><strong>{Math.max(0,creatorRewardPercent).toFixed(1)}%</strong><span>Other recipients</span><strong>{additionalRewardPercent.toFixed(1)}%</strong></div><button type="button" className="launch-add-recipient" onClick={addRewardRecipient} disabled={rewardRecipients.length>=6}>+ Add reward recipient ({rewardRecipients.length}/6)</button><p>Up to 7 reward slots total. Shares must add up to 100%. Rewards are paid in the selected pool pair.</p></div></div>
         <div className="launch-tax-section"><div className="launch-tax-heading"><strong>Tax settings</strong><small>Set token buy and sell tax</small></div><div className="launch-fields"><label><span>Buy tax (%)</span><input type="number" min="0" max="10" step="0.1" inputMode="decimal" value={buyTax} onChange={e=>setBuyTax(e.target.value)} required/><small>0–10%</small></label><label><span>Sell tax (%)</span><input type="number" min="0" max="10" step="0.1" inputMode="decimal" value={sellTax} onChange={e=>setSellTax(e.target.value)} required/><small>0–10%</small></label></div><p>Tax values are passed to Clanker v5 as buyFee and sellFee. Confirm the final fee behavior in your wallet before deploying.</p></div>
         <div className="launch-wallet-row"><div><small>DEPLOY WALLET</small><strong>{wallet?shortAddress(wallet):'Not connected'}</strong><span>{wallet?(baseConnected?'Connected · Base mainnet':'Connected · switch to Base'):'Connect to continue'}</span></div><button type="button" className="launch-connect" onClick={connect} disabled={connecting||launching}>{connecting?<LoaderCircle size={15} className="spin"/>:<Wallet size={15}/>} {connecting?'Connecting':wallet?(baseConnected?'Base connected':'Switch network'):'Connect wallet'}</button></div>
         {error&&<div className="launch-error" role="alert">{error}</div>}
-        <div className="launch-disclaimer">Clanker v5 launch settings: {buyTax}% buy tax, {sellTax}% sell tax, native ETH pool, 100% creator rewards, editable metadata and anti-sniping enabled. Review fees and network details before confirming.</div>
+        <div className="launch-disclaimer">Clanker v5 launch settings: {buyTax}% buy tax, {sellTax}% sell tax, {poolToken===ZERO_ADDRESS?'native ETH':poolToken===WETH_BASE?'WETH':'USDC'} pool, rewards split {Math.max(0,creatorRewardPercent).toFixed(1)}% to creator and {additionalRewardPercent.toFixed(1)}% to other recipients, editable metadata and anti-sniping enabled. Review fees and network details before confirming.</div>
         <button className="primary-cta launch-next" type="submit">Review launch <ArrowUpRight size={16}/></button>
       </form>
     </>:step==='review'?<>
       <div className="launch-heading"><div className="modal-icon">{image?<img src={image} alt=""/>:<ImagePlus size={22}/>}</div><div><h3 id="launch-title">Review your <em>launch.</em></h3><p>Logo and metadata will be uploaded and sent to Clanker SDK.</p></div></div>
-      <div className="launch-review-card"><div className="launch-token-preview">{image&&<img src={image} alt=""/>}<div><strong>{name}</strong><span>${symbol.toUpperCase()}</span></div></div><p>{description||'No description added.'}</p><dl><div><dt>Network</dt><dd>Base mainnet</dd></div><div><dt>Protocol</dt><dd>Clanker v5 SDK</dd></div><div><dt>Pool pair</dt><dd>ETH</dd></div><div><dt>Buy / sell tax</dt><dd>{buyTax}% / {sellTax}%</dd></div><div><dt>Creator rewards</dt><dd>100% to your wallet</dd></div><div><dt>Anti-sniping</dt><dd>Enabled</dd></div></dl>{website&&<a href={website} target="_blank" rel="noreferrer"><ExternalLink size={13}/> Website</a>}{social&&<a href={social} target="_blank" rel="noreferrer"><ExternalLink size={13}/> Social</a>}</div>
+      <div className="launch-review-card"><div className="launch-token-preview">{image&&<img src={image} alt=""/>}<div><strong>{name}</strong><span>${symbol.toUpperCase()}</span></div></div><p>{description||'No description added.'}</p><dl><div><dt>Network</dt><dd>Base mainnet</dd></div><div><dt>Protocol</dt><dd>Clanker v5 SDK</dd></div><div><dt>Pool pair</dt><dd>{poolToken===ZERO_ADDRESS?'Native ETH':poolToken===WETH_BASE?'WETH':'USDC'}</dd></div><div><dt>Creator rewards</dt><dd>{Math.max(0,creatorRewardPercent).toFixed(1)}%</dd></div>{rewardRecipients.map((item,index)=><div key={index}><dt>Reward recipient {index+1}</dt><dd>{item.recipient} · {item.percent}%</dd></div>)}<div><dt>Buy / sell tax</dt><dd>{buyTax}% / {sellTax}%</dd></div><div><dt>Creator rewards</dt><dd>{Math.max(0,creatorRewardPercent).toFixed(1)}% to your wallet</dd></div><div><dt>Anti-sniping</dt><dd>Enabled</dd></div></dl>{website&&<a href={website} target="_blank" rel="noreferrer"><ExternalLink size={13}/> Website</a>}{social&&<a href={social} target="_blank" rel="noreferrer"><ExternalLink size={13}/> Social</a>}</div>
       {error&&<div className="launch-error" role="alert">{error}</div>}
       {status&&<div className="launch-status" role="status">{launching&&<LoaderCircle size={15} className="spin"/>}{status}</div>}
       <div className="launch-review-actions"><button className="launch-back" onClick={()=>{setStep('edit');setError('');setStatus('')}} disabled={launching}><ArrowLeft size={15}/> Edit details</button><button className="primary-cta" onClick={launch} disabled={launching}>{launching?<LoaderCircle size={15} className="spin"/>:<ArrowUpRight size={16}/>} {launching?'Launching…':'Deploy with Clanker SDK'}</button></div>
