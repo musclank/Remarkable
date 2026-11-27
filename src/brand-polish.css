@@ -1,0 +1,50 @@
+/* Refined REMARKABLE wordmark lockup */
+.brand{
+  gap:13px;
+  font-family:Manrope,system-ui,sans-serif;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.17em;
+  line-height:1;
+  color:#f4f7f1;
+  text-shadow:0 1px 18px rgba(181,255,109,.08);
+}
+.brand > span:last-child{
+  display:block;
+  line-height:1.05;
+  white-space:nowrap;
+}
+.brand > span:last-child::after{
+  content:"ONCHAIN CULTURE";
+  display:block;
+  margin-top:5px;
+  color:#7f8d99;
+  font:500 8px/1.1 "DM Mono",monospace;
+  letter-spacing:.22em;
+  text-shadow:none;
+}
+.brand-dot{
+  color:#b5ff6d;
+  text-shadow:0 0 12px rgba(181,255,109,.45);
+}
+.brand-mark{
+  flex:none;
+  border-radius:10px;
+  box-shadow:0 0 0 3px rgba(181,255,109,.035),inset 0 0 18px rgba(181,255,109,.12);
+}
+footer .brand{
+  font-size:12px;
+  letter-spacing:.16em;
+}
+footer .brand > span:last-child::after{
+  font-size:7px;
+  margin-top:4px;
+}
+@media(max-width:640px){
+  .brand{gap:10px;font-size:11px;letter-spacing:.15em}
+  .brand > span:last-child::after{font-size:7px;letter-spacing:.18em;margin-top:4px}
+}
+@media(max-width:380px){
+  .topbar>.brand{font-size:10px;letter-spacing:.12em;gap:9px}
+  .brand > span:last-child::after{font-size:6px;letter-spacing:.16em}
+}
