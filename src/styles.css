@@ -318,8 +318,8 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 @keyframes rm-mascot-wink{0%,42%,48%,100%{filter:drop-shadow(0 0 0 #b5ff6d00)}45%{filter:drop-shadow(0 0 9px #b5ff6d88)}}
 @keyframes rm-mascot-orbit{0%,100%{transform:rotate(-7deg) scale(1)}50%{transform:rotate(7deg) scale(1.045)}}
 @keyframes rm-modal-title-in{from{opacity:0;transform:translateY(12px);letter-spacing:-.02em}to{opacity:1;transform:translateY(0);letter-spacing:-.045em}}
-.hero h1,.section-head h2,.manifesto h2,.info-modal h3,.swap-modal h3,.launch-heading h3,.detail-heading h3{background:linear-gradient(105deg,#f5f7f4 0%,#b5ff6d 24%,#f5f7f4 48%,#9de9ff 72%,#f5f7f4 100%);background-size:240% 100%;-webkit-background-clip:text;background-clip:text;animation:rm-title-flow 8s ease-in-out infinite}
-.hero h1 em,.section-head h2 em,.manifesto h2 em,.info-modal h3 em,.swap-modal h3 em,.launch-heading h3 em,.detail-heading h3 em{color:inherit;background:none;-webkit-text-fill-color:inherit}
+.hero h1,.section-head h2,.manifesto h2,.info-modal h3,.swap-modal h3,.launch-heading h3,.detail-heading h3{background:linear-gradient(105deg,#f5f7f4 0%,#b5ff6d 24%,#f5f7f4 48%,#9de9ff 72%,#f5f7f4 100%);background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:rm-title-flow 8s ease-in-out infinite}
+.hero h1 em,.section-head h2 em,.manifesto h2 em,.info-modal h3 em,.swap-modal h3 em,.launch-heading h3 em,.detail-heading h3 em{color:transparent;background:none;-webkit-text-fill-color:transparent}
 .eyebrow{animation:rm-eyebrow-pulse 7s ease-in-out infinite}
 .info-modal h3,.swap-modal h3,.launch-heading h3,.detail-heading h3{animation:rm-modal-title-in .65s cubic-bezier(.2,.75,.2,1) both,rm-title-flow 8s ease-in-out infinite .65s}
 .brand-mark .remarkable-mascot{transform-origin:50% 55%;animation:rm-mascot-orbit 4.8s ease-in-out infinite,rm-mascot-wink 6.4s ease-in-out infinite}
