@@ -374,3 +374,22 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
   opacity:1!important;
   visibility:visible!important;
 }
+
+
+/* Mobile header: keep wallet connection visible beside launch actions */
+@media(max-width:640px){
+  .top-actions{gap:6px;margin-left:auto;margin-right:7px;flex:none}
+  .launch-btn,.wallet-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 10px;font-size:10px;white-space:nowrap}
+  .wallet-btn{border-color:#b5ff6d55;color:#b5ff6d;background:#b5ff6d0b}
+  .launch-btn span,.wallet-btn span{display:inline}
+  .mobile-menu{flex:none}
+}
+@media(max-width:380px){
+  .topbar{padding:0 12px}
+  .brand{gap:7px;font-size:10px;letter-spacing:.09em}
+  .top-actions{gap:5px;margin-right:5px}
+  .launch-btn{padding:9px}
+  .launch-btn span{display:none}
+  .wallet-btn{padding:9px 8px}
+  .wallet-btn span{font-size:9px}
+}
