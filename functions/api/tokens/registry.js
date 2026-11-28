@@ -46,7 +46,7 @@ export async function onRequest({ request, env }) {
   const description = clean(body.description, 500);
   const website = clean(body.website, 300);
   const social = clean(body.social, 300);
-  if (Number(body.chainId) !== 8453 || !addressPattern.test(address) || !hashPattern.test(txHash) || name.length < 2 || !/^[A-Z0-9]{2,25}$/.test(symbol) || !/^(https?:\/\/|ipfs:\/\/)/i.test(imageUri)) {
+  if (Number(body.chainId) !== 8453 || !addressPattern.test(address) || !hashPattern.test(txHash) || name.length < 2 || !/^[A-Z0-9]{2,25}$/.test(symbol) || (imageUri && !/^(https?:\/\/|ipfs:\/\/)/i.test(imageUri))) {
     return json({ error: "Invalid Base token metadata" }, 400);
   }
 
@@ -54,9 +54,9 @@ export async function onRequest({ request, env }) {
     const receipt = await rpc("eth_getTransactionReceipt", [txHash]);
     if (!receipt || receipt.status !== "0x1") return json({ error: "Transaction is not confirmed successfully on Base" }, 400);
     const addressLower = address.toLowerCase();
-    const emittedByToken = (receipt.logs || []).some(log => String(log.address || "").toLowerCase() === addressLower);
+    const addressHex = addressLower.slice(2);\n    const transactionReferencesToken = (receipt.logs || []).some(log => {\n      const evidence = [log.address, ...(log.topics || []), log.data].filter(Boolean).join(" ").toLowerCase();\n      return evidence.includes(addressLower) || evidence.includes(addressHex);\n    });
     const code = await rpc("eth_getCode", [address, "latest"]);
-    if (!emittedByToken || !code || code === "0x") return json({ error: "Token address could not be verified against the confirmed transaction" }, 400);
+    if (!transactionReferencesToken || !code || code === "0x") return json({ error: "Token address could not be verified against the confirmed transaction" }, 400);
 
     await env.DB.prepare(
       "INSERT INTO token_registry (chain_id, token_address, name, symbol, image_uri, description, website, social_url, tx_hash, created_at) VALUES (8453, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now')) ON CONFLICT(chain_id, token_address) DO UPDATE SET name=excluded.name, symbol=excluded.symbol, image_uri=excluded.image_uri, description=excluded.description, website=excluded.website, social_url=excluded.social_url, tx_hash=excluded.tx_hash"
