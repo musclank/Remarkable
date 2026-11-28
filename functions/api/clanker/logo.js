@@ -51,12 +51,12 @@ export async function onRequest({request}){
    const html=await page.text();
    const tags=html.match(/<meta\\b[^>]*>/gi)||[];
    for(const tag of tags){
-    const property=(tag.match(/(?:property|name)=["']([^"']+)["']/i)||[])[1]||'';
-    const value=(tag.match(/content=["']([^"']+)["']/i)||[])[1]||'';
+    const property=(tag.match(/\\b(?:property|name)\\s*=\\s*["']([^"']+)["']/i)||[])[1]||'';
+    const value=(tag.match(/\\bcontent\\s*=\\s*["']([^"']+)["']/i)||[])[1]||'';
     if(/^(?:og:image|twitter:image)$/i.test(property)&&value&&/^https?:\\/\\//i.test(value))return json({image:value.replace(/&amp;/g,'&'),source:'clanker-page-meta'});
    }
-   const embedded=html.match(/(?:imageUrl|image_url|imageURI|image_uri|tokenImage|logoUrl|logo_url)["']?\\s*[:=]\\s*["'](https?:\\/\\/[^"'\\\\ ]+|ipfs:\\/\\/[^"'\\\\ ]+)/gi)||[];
-   for(const entry of embedded){const value=entry.match(/(https?:\\/\\/[^"'\\\\ ]+|ipfs:\\/\\/[^"'\\\\ ]+)/i)?.[1];if(value)return json({image:resolveGateway(value.replace(/\\\\u0026/g,'&')),source:'clanker-page-data'});}
+   const embedded=html.match(/["'](?:imageUrl|image_url|imageURI|image_uri|tokenImage|logoUrl|logo_url)["']\\s*:\\s*["']([^"']+)["']/gi)||[];
+   for(const entry of embedded){const value=entry.match(/["']([^"']+)["']\\s*$/)?.[1];if(value&&/^(https?:\\/\\/|ipfs:\\/\\/)/i.test(value))return json({image:resolveGateway(value.replace(/\\\\u0026/g,'&')),source:'clanker-page-data'});}
   }
  }catch{}
  return json({image:'',source:'clanker',message:'Clanker did not return a public logo for this token'},404);
