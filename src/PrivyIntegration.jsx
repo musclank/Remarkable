@@ -122,6 +122,19 @@ function PrivyPortfolioPanelContent({onClose}){
   const {wallets}=useWallets();
   const [network,setNetwork]=useState('base'),[refreshTick,setRefreshTick]=useState(0),[balance,setBalance]=useState(''),[loading,setLoading]=useState(false),[error,setError]=useState('');
   const [addressCopied,setAddressCopied]=useState(false);
+  const [tokenAddressInput,setTokenAddressInput]=useState('');
+  const [tokenAdding,setTokenAdding]=useState(false);
+  const [tokenError,setTokenError]=useState('');
+  const [trackedTokens,setTrackedTokens]=useState(()=>{
+    try{
+      const saved=JSON.parse(localStorage.getItem('remarkable-portfolio-tokens')||'[]');
+      if(!Array.isArray(saved))return [];
+      return saved.filter(item=>item&&typeof item==='object'&&['ethereum','base','bsc'].includes(item.network)&&typeof item.address==='string'&&/^0x[a-fA-F0-9]{40}$/.test(item.address)&&typeof item.symbol==='string'&&Number.isInteger(item.decimals)&&item.decimals>=0&&item.decimals<=36);
+    }catch{return []}
+  });
+  const [tokenBalances,setTokenBalances]=useState({});
+  const [tokensLoading,setTokensLoading]=useState(false);
+  useEffect(()=>{try{localStorage.setItem('remarkable-portfolio-tokens',JSON.stringify(trackedTokens))}catch{}},[trackedTokens]);
   const copyPortfolioAddress=async()=>{if(!address)return;try{await navigator.clipboard.writeText(address);setAddressCopied(true);setTimeout(()=>setAddressCopied(false),1800)}catch{setError('Could not copy address. Select and copy it manually.')}};
   const linkedAddress=user?.linkedAccounts?.find(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')?.address||user?.wallet?.address||'';
   const wallet=getEmbeddedConnectedWallet(wallets)||wallets.find(item=>linkedAddress&&item.address?.toLowerCase()===linkedAddress.toLowerCase())||wallets.find(item=>item.walletClientType==='privy'&&item.chainType==='ethereum');
