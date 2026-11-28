@@ -62,13 +62,15 @@ export async function onRequest({ request, env }) {
 
     if (tradeResponse.status === 429) {
       const retryAfter = Math.max(30, Math.min(300, Number(tradeResponse.headers.get("Retry-After")) || 120));
-      return json({
+      const limited = json({
         source: "GeckoTerminal",
         poolAddress: pair.pairAddress,
         pairUrl: pair.url || null,
         transactions: [],
         warning: "Transaction feed is temporarily rate-limited. Please try again in about " + retryAfter + " seconds."
-      }, 200, "public, max-age=45, s-maxage=90");
+      }, 200, "public, max-age=60, s-maxage=120");
+      if (edgeCache) await edgeCache.put(key, limited.clone());
+      return limited;
     }
     if (!tradeResponse.ok) {
       if (tradeResponse.status === 404) return json({ transactions: [], warning: "This pool is not indexed by GeckoTerminal yet." }, 200, "public, max-age=120, s-maxage=180");
