@@ -143,11 +143,11 @@ function PrivyPortfolioPanelContent({onClose}){
   const networks={ethereum:{name:'Ethereum',symbol:'ETH',rpc:'https://ethereum-rpc.publicnode.com'},base:{name:'Base',symbol:'ETH',rpc:'https://base-rpc.publicnode.com'},bsc:{name:'BNB Chain',symbol:'BNB',rpc:'https://bsc-rpc.publicnode.com'}};
   useEffect(()=>{
     if(!ready||!authenticated||!address){setBalance('');return;}
-    const networkInfo=networks[network],controller=new AbortController();let active=true;setLoading(true);setError('');
+    const networkInfo=networks[network],controller=new AbortController();let active=true;setLoading(true);setBalance('');setError('');
     fetch(networkInfo.rpc,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_getBalance',params:[address,'latest']}),signal:controller.signal})
       .then(async response=>{if(!response.ok)throw new Error('RPC request failed');return response.json()})
       .then(result=>{if(result.error)throw new Error(result.error.message||'Unable to read balance');const wei=BigInt(result.result||'0x0'),whole=wei/1000000000000000000n,fraction=(wei%1000000000000000000n).toString().padStart(18,'0').slice(0,6);if(active)setBalance(whole.toString()+'.'+fraction)})
-      .catch(err=>{if(active&&err.name!=='AbortError')setError(err.message||'Unable to load balance')})
+      .catch(err=>{if(active&&err.name!=='AbortError'){setBalance('');setError(err.message||'Unable to load balance')}})
       .finally(()=>{if(active)setLoading(false)});
     return()=>{active=false;controller.abort()};
   },[ready,authenticated,address,network,refreshTick]);
