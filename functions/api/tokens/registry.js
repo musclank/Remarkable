@@ -46,7 +46,7 @@ export async function onRequest({ request, env }) {
   const description = clean(body.description, 500);
   const website = clean(body.website, 300);
   const social = clean(body.social, 300);
-  if (Number(body.chainId) !== 8453 || !addressPattern.test(address) || !hashPattern.test(txHash) || name.length < 2 || !/^[A-Z0-9]{2,25}$/.test(symbol) || !/^https?:\/\//i.test(imageUri)) {
+  if (Number(body.chainId) !== 8453 || !addressPattern.test(address) || !hashPattern.test(txHash) || name.length < 2 || !/^[A-Z0-9]{2,25}$/.test(symbol) || !/^(https?:\/\/|ipfs:\/\/)/i.test(imageUri)) {
     return json({ error: "Invalid Base token metadata" }, 400);
   }
 
