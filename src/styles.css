@@ -545,3 +545,9 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 .portfolio-transfer-success a{display:flex;align-items:center;gap:5px;color:#c9d2dc;font-size:10px}
 .portfolio-transfer-success small{font:9px 'DM Mono',monospace;color:#7f8a96;overflow-wrap:anywhere}
 @media(max-width:640px){.portfolio-transfer-card{padding:13px}.portfolio-transfer-actions>button{padding:12px 8px;font-size:11px}.portfolio-receive-qr{width:160px;height:160px}}
+
+.portfolio-transfer-percent{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:9px 0 7px}
+.portfolio-transfer-percent button{border:1px solid #2b3743;border-radius:6px;background:#111a23;color:#bfc9d3;padding:8px 2px;font:10px 'DM Mono',monospace;transition:border-color .15s,background .15s,color .15s}
+.portfolio-transfer-percent button:hover:not(:disabled){border-color:var(--acid);background:#19251d;color:var(--acid)}
+.portfolio-transfer-percent button:disabled{opacity:.45;cursor:not-allowed}
+.portfolio-transfer-balance{font:9px 'DM Mono',monospace;color:#75818d;margin:4px 0 10px}
