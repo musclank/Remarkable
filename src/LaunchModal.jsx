@@ -10,7 +10,7 @@ const WETH_BASE='0x4200000000000000000000000000000000000006';
 const USDC_BASE='0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const shortAddress=value=>value?value.slice(0,6)+'…'+value.slice(-4):'';
 
-export default function LaunchModal({onClose,privyConnect}){
+export default function LaunchModal({onClose,privyConnect,onRegistered}){
   const [name,setName]=useState('');
   const [symbol,setSymbol]=useState('');
   const [description,setDescription]=useState('');
@@ -196,6 +196,7 @@ export default function LaunchModal({onClose,privyConnect}){
         const registryBody = await registryResponse.json().catch(() => ({}));
         if (!registryResponse.ok) throw new Error(registryBody?.error || 'Registry is not configured yet');
         setStatus('Token deployed, confirmed, and added to Recently Launched');
+        onRegistered?.(result.address);
       } catch (registryError) {
         setStatus('Token deployed and confirmed. Registry save pending: ' + (registryError?.message || 'not available'));
       }
