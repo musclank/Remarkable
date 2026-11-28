@@ -25,7 +25,7 @@ export async function onRequest({ request, env }) {
   if (request.method === "GET") {
     try {
       const { results = [] } = await env.DB.prepare(
-        "SELECT address, name, symbol, image_uri AS imageUri, description, website, social, tx_hash AS txHash, created_at AS createdAt FROM token_registry WHERE chain_id = 8453 ORDER BY created_at DESC LIMIT 100"
+        "SELECT token_address AS address, name, symbol, image_uri AS imageUri, description, website, social_url AS social, tx_hash AS txHash, created_at AS createdAt FROM token_registry WHERE chain_id = 8453 ORDER BY created_at DESC LIMIT 100"
       ).all();
       return json({ tokens: results });
     } catch (error) {
@@ -59,7 +59,7 @@ export async function onRequest({ request, env }) {
     if (!emittedByToken || !code || code === "0x") return json({ error: "Token address could not be verified against the confirmed transaction" }, 400);
 
     await env.DB.prepare(
-      "INSERT INTO token_registry (chain_id, address, name, symbol, image_uri, description, website, social, tx_hash, created_at) VALUES (8453, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now')) ON CONFLICT(chain_id, address) DO UPDATE SET name=excluded.name, symbol=excluded.symbol, image_uri=excluded.image_uri, description=excluded.description, website=excluded.website, social=excluded.social, tx_hash=excluded.tx_hash"
+      "INSERT INTO token_registry (chain_id, token_address, name, symbol, image_uri, description, website, social_url, tx_hash, created_at) VALUES (8453, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now')) ON CONFLICT(chain_id, token_address) DO UPDATE SET name=excluded.name, symbol=excluded.symbol, image_uri=excluded.image_uri, description=excluded.description, website=excluded.website, social_url=excluded.social_url, tx_hash=excluded.tx_hash"
     ).bind(addressLower, name, symbol, imageUri, description, website, social, txHash).run();
     return json({ success: true, address: addressLower, status: "registered" }, 201);
   } catch (error) {
