@@ -221,16 +221,16 @@ function PrivyPortfolioPanelContent({onClose}){
 
 
 class PortfolioErrorBoundary extends React.Component{
-  constructor(props){super(props);this.state={hasError:false};}
+  constructor(props){super(props);this.state={hasError:false,errorMessage:'',retryKey:0};}
   static getDerivedStateFromError(){return {hasError:true};}
-  componentDidCatch(error){console.error('Portfolio panel render error:',error);}
-  retry=()=>this.setState({hasError:false});
+  componentDidCatch(error){console.error('Portfolio panel render error:',error);this.setState({errorMessage:error?.message||'Unknown rendering error'});}
+  retry=()=>this.setState(state=>({hasError:false,errorMessage:'',retryKey:state.retryKey+1}));
   render(){
-    if(this.state.hasError)return <div className="privy-portfolio-panel"><div className="eyebrow">PORTFOLIO TEMPORARILY UNAVAILABLE</div><p className="portfolio-empty">The portfolio panel encountered an error. Your wallet and funds are not affected. Try reopening or retrying this panel.</p><button className="primary-cta launch-next" onClick={this.retry}>Try again <RefreshCw size={15}/></button><button className="swap-cancel" onClick={this.props.onClose}><X size={14}/> Close</button></div>;
-    return this.props.children;
+    if(this.state.hasError)return <div className="privy-portfolio-panel"><div className="eyebrow">PORTFOLIO TEMPORARILY UNAVAILABLE</div><p className="portfolio-empty">The portfolio panel encountered an error. Your wallet and funds are not affected. Retry to reload the panel.</p>{this.state.errorMessage&&<p className="portfolio-token-error" role="status">Debug: {this.state.errorMessage}</p>}<button className="primary-cta launch-next" onClick={this.retry}>Try again <RefreshCw size={15}/></button><button className="swap-cancel" onClick={this.props.onClose}><X size={14}/> Close</button></div>;
+    return <PrivyPortfolioPanelContent key={this.state.retryKey} onClose={this.props.onClose}/>;
   }
 }
 
 export function PrivyPortfolioPanel({onClose}){
-  return <PortfolioErrorBoundary onClose={onClose}><PrivyPortfolioPanelContent onClose={onClose}/></PortfolioErrorBoundary>;
+  return <PortfolioErrorBoundary onClose={onClose}/>;
 }
