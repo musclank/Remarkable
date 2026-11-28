@@ -137,6 +137,9 @@ function PrivyPortfolioPanelContent({onClose}){
   });
   const [tokenBalances,setTokenBalances]=useState({});
   const [tokensLoading,setTokensLoading]=useState(false);
+  const [nativeUsdPrice,setNativeUsdPrice]=useState(null);
+  const [tokenUsdPrices,setTokenUsdPrices]=useState({});
+  const [pricesLoading,setPricesLoading]=useState(false);
   useEffect(()=>{try{localStorage.setItem('remarkable-portfolio-tokens',JSON.stringify(trackedTokens))}catch{}},[trackedTokens]);
   const copyPortfolioAddress=async()=>{if(!address)return;try{await navigator.clipboard.writeText(address);setAddressCopied(true);setTimeout(()=>setAddressCopied(false),1800)}catch{setError('Could not copy address. Select and copy it manually.')}};
   const linkedAddress=user?.linkedAccounts?.find(item=>item.type==='wallet'&&item.walletClientType==='privy'&&item.chainType==='ethereum')?.address||user?.wallet?.address||'';
