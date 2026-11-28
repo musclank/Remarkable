@@ -39,7 +39,7 @@ export async function onRequest({request}){
    const images=findMatchingImages(payload,normalized);
    for(const candidate of images){
     const resolved=resolveGateway(candidate);
-    if(/\\.(?:json|metadata)(?:[?#]|$)/i.test(resolved)){
+    if(/\.(?:json|metadata)(?:[?#]|$)/i.test(resolved)){
      try{const metaResponse=await fetch(resolved,{headers:{Accept:'application/json'}});if(metaResponse.ok){const metadata=await metaResponse.json();const nested=collectImages(metadata);if(nested.length)return json({image:resolveGateway(nested[0]),source:'clanker-token-metadata'});}}catch{}
     }else return json({image:resolved,source:'clanker-api'});
    }
@@ -49,14 +49,14 @@ export async function onRequest({request}){
   const page=await fetch('https://www.clanker.world/clanker/'+address,{headers:{Accept:'text/html','User-Agent':'Remarkable-Token-Explorer/1.0'}});
   if(page.ok){
    const html=await page.text();
-   const tags=html.match(/<meta\\b[^>]*>/gi)||[];
+   const tags=html.match(/<meta\b[^>]*>/gi)||[];
    for(const tag of tags){
-    const property=(tag.match(/\\b(?:property|name)\\s*=\\s*["']([^"']+)["']/i)||[])[1]||'';
-    const value=(tag.match(/\\bcontent\\s*=\\s*["']([^"']+)["']/i)||[])[1]||'';
-    if(/^(?:og:image|twitter:image)$/i.test(property)&&value&&/^https?:\\/\\//i.test(value))return json({image:value.replace(/&amp;/g,'&'),source:'clanker-page-meta'});
+    const property=(tag.match(/\b(?:property|name)\s*=\s*["']([^"']+)["']/i)||[])[1]||'';
+    const value=(tag.match(/\bcontent\s*=\s*["']([^"']+)["']/i)||[])[1]||'';
+    if(/^(?:og:image|twitter:image)$/i.test(property)&&value&&/^https?:\/\//i.test(value))return json({image:value.replace(/&amp;/g,'&'),source:'clanker-page-meta'});
    }
-   const embedded=html.match(/["'](?:imageUrl|image_url|imageURI|image_uri|tokenImage|logoUrl|logo_url)["']\\s*:\\s*["']([^"']+)["']/gi)||[];
-   for(const entry of embedded){const value=entry.match(/["']([^"']+)["']\\s*$/)?.[1];if(value&&/^(https?:\\/\\/|ipfs:\\/\\/)/i.test(value))return json({image:resolveGateway(value.replace(/\\\\u0026/g,'&')),source:'clanker-page-data'});}
+   const embedded=html.match(/["'](?:imageUrl|image_url|imageURI|image_uri|tokenImage|logoUrl|logo_url)["']\s*:\s*["']([^"']+)["']/gi)||[];
+   for(const entry of embedded){const value=entry.match(/["']([^"']+)["']\s*$/)?.[1];if(value&&/^(https?:\/\/|ipfs:\/\/)/i.test(value))return json({image:resolveGateway(value.replace(/\\u0026/g,'&')),source:'clanker-page-data'});}
   }
  }catch{}
  return json({image:'',source:'clanker',message:'Clanker did not return a public logo for this token'},404);
