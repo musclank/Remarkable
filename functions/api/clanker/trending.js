@@ -50,6 +50,29 @@ const fetchBaseDexTokens = async () => {
     .slice(0, 20);
 };
 
+
+const withRegisteredTokens = async (tokens, env) => {
+  if (!env?.DB) return tokens;
+  try {
+    const { results = [] } = await env.DB.prepare(
+      "SELECT address, name, symbol, image_uri, description, website, social, tx_hash, created_at FROM token_registry WHERE chain_id = 8453 ORDER BY created_at DESC LIMIT 100"
+    ).all();
+    const registered = results.map(row => ({
+      chain: "BASE", chainId: "base", type: "New", tokenAddress: row.address,
+      baseToken: { address: row.address, name: row.name, symbol: row.symbol },
+      name: row.name, symbol: row.symbol, imageUrl: row.image_uri,
+      description: row.description || "Recently launched on Remarkable.",
+      website: row.website || "", social: row.social || "",
+      txHash: row.tx_hash, createdAt: row.created_at
+    }));
+    const registeredAddresses = new Set(registered.map(item => item.tokenAddress.toLowerCase()));
+    const rest = tokens.filter(item => !registeredAddresses.has(String(item?.baseToken?.address || item?.tokenAddress || item?.address || "").toLowerCase()));
+    return [...registered, ...rest].slice(0, 100);
+  } catch {
+    return tokens;
+  }
+};
+
 const json = (data, status, origin, cache = "no-store") => new Response(JSON.stringify(data), {
   status,
   headers: {
@@ -123,11 +146,11 @@ const mergeBaseTokens = async (clankerTokens) => {
   return [...prioritizedBase, ...remaining].slice(0, 20);
 };
 
-export async function onRequest({ request }) {
+export async function onRequest({ request, env }) {
   const url = new URL(request.url);
   if (url.searchParams.get("chain")?.toUpperCase() === "BASE") {
     try {
-      const tokens = await fetchBaseDexTokens();
+      const tokens = await withRegisteredTokens(await fetchBaseDexTokens(), env);
       if (!tokens.length) return json({ error: "No Base tokens were returned by Clanker or DexScreener", detail: "The live providers returned no Base token pairs. Try again shortly." }, 502, url.origin);
       return json({ source: "Clanker + DexScreener Base", tokens }, 200, url.origin, "public, max-age=15, s-maxage=20");
     } catch (error) {
@@ -140,7 +163,7 @@ export async function onRequest({ request }) {
     const clanker = await getJson("https://www.clanker.world/api/tokens/trending");
     const tokens = extractTokens(clanker);
     if (Array.isArray(tokens) && tokens.length) {
-      const combined = await mergeBaseTokens(tokens).catch(() => tokens);
+      const combined = await withRegisteredTokens(await mergeBaseTokens(tokens).catch(() => tokens), env);
       return json({ source: "Clanker + DexScreener Base", tokens: combined }, 200, origin, "public, max-age=15, s-maxage=20");
     }
     clankerError = "Clanker returned no token records";
@@ -189,7 +212,7 @@ export async function onRequest({ request }) {
     }
     const tokens = [...bestByToken.values()].sort((a, b) => Number(b.volume?.h24 || 0) - Number(a.volume?.h24 || 0)).slice(0, 20);
     if (tokens.length) {
-      return json({ source: "DexScreener", tokens, fallbackReason: clankerError }, 200, origin, "public, max-age=20, s-maxage=30");
+      return json({ source: "DexScreener", tokens: await withRegisteredTokens(tokens, env), fallbackReason: clankerError }, 200, origin, "public, max-age=20, s-maxage=30");
     }
     return json({ error: "Clanker and DexScreener did not return live market tokens", detail: clankerError }, 502, origin);
   } catch (error) {
