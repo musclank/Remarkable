@@ -24,7 +24,7 @@ const findMatchingImages=(payload,address)=>{
 };
 const resolveGateway=value=>/^ipfs:\/\//i.test(value)?'https://ipfs.io/ipfs/'+value.replace(/^ipfs:\/\/(?:ipfs\/)?/i,''):value;
 export async function onRequest({request}){
- const url=new URL(request.url);const address=url.searchParams.get('address')||'';
+ const url=new URL(request.url);const address=(url.searchParams.get('address')||url.searchParams.get('tokenAddress')||url.searchParams.get('contractAddress')||url.searchParams.get('token')||'').trim();
  if(!ADDRESS.test(address))return json({error:'Valid token address is required'},400);
  const normalized=address.toLowerCase();
  const endpoints=[
