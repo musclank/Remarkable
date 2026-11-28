@@ -54,13 +54,8 @@ export async function onRequest({ request, env }) {
     const receipt = await rpc("eth_getTransactionReceipt", [txHash]);
     if (!receipt || receipt.status !== "0x1") return json({ error: "Transaction is not confirmed successfully on Base" }, 400);
     const addressLower = address.toLowerCase();
-    const addressHex = addressLower.slice(2);
-    const transactionReferencesToken = (receipt.logs || []).some(log => {
-      const evidence = [log.address, ...(log.topics || []), log.data].filter(Boolean).join(" ").toLowerCase();
-      return evidence.includes(addressLower) || evidence.includes(addressHex);
-    });
     const code = await rpc("eth_getCode", [address, "latest"]);
-    if (!transactionReferencesToken || !code || code === "0x") return json({ error: "Token address could not be verified against the confirmed transaction" }, 400);
+    if (!code || code === "0x") return json({ error: "Token address has no deployed contract code on Base" }, 400);
 
     await env.DB.prepare(
       "INSERT INTO token_registry (chain_id, token_address, name, symbol, image_uri, description, website, social_url, tx_hash, created_at) VALUES (8453, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now')) ON CONFLICT(chain_id, token_address) DO UPDATE SET name=excluded.name, symbol=excluded.symbol, image_uri=excluded.image_uri, description=excluded.description, website=excluded.website, social_url=excluded.social_url, tx_hash=excluded.tx_hash"
