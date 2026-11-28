@@ -1,6 +1,6 @@
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'public, max-age=300','Access-Control-Allow-Origin':'*'}});
 const ADDRESS=/^0x[a-fA-F0-9]{40}$/;
-const addressOf=value=>String(value?.address||value?.tokenAddress||value?.token_address||value?.contractAddress||value?.token?.address||value?.baseToken?.address||'').toLowerCase();
+const addressOf=value=>String(value?.address||value?.contract_address||value?.tokenAddress||value?.token_address||value?.contractAddress||value?.token?.address||value?.token?.contract_address||value?.baseToken?.address||'').toLowerCase();
 const imageFields=['image','imageUrl','image_url','imageUri','image_uri','icon','logo','logoUrl','logo_url','tokenImage','token_image','avatar','metadataImage','metadata_image'];
 const collectImages=(value,out=[],depth=0)=>{
  if(!value||depth>8)return out;
@@ -28,10 +28,8 @@ export async function onRequest({request}){
  if(!ADDRESS.test(address))return json({error:'Valid token address is required'},400);
  const normalized=address.toLowerCase();
  const endpoints=[
-  'https://www.clanker.world/api/tokens/search?query='+encodeURIComponent(address),
-  'https://www.clanker.world/api/tokens/search?q='+encodeURIComponent(address),
-  'https://www.clanker.world/api/tokens?address='+encodeURIComponent(address),
-  'https://www.clanker.world/api/tokens?tokenAddress='+encodeURIComponent(address)
+  'https://www.clanker.world/api/tokens?q='+encodeURIComponent(address)+'&chainId=8453&limit=20',
+  'https://www.clanker.world/api/tokens/search?q='+encodeURIComponent(address)
  ];
  for(const endpoint of endpoints){
   try{
