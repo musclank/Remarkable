@@ -54,7 +54,11 @@ export async function onRequest({ request, env }) {
     const receipt = await rpc("eth_getTransactionReceipt", [txHash]);
     if (!receipt || receipt.status !== "0x1") return json({ error: "Transaction is not confirmed successfully on Base" }, 400);
     const addressLower = address.toLowerCase();
-    const addressHex = addressLower.slice(2);\n    const transactionReferencesToken = (receipt.logs || []).some(log => {\n      const evidence = [log.address, ...(log.topics || []), log.data].filter(Boolean).join(" ").toLowerCase();\n      return evidence.includes(addressLower) || evidence.includes(addressHex);\n    });
+    const addressHex = addressLower.slice(2);
+    const transactionReferencesToken = (receipt.logs || []).some(log => {
+      const evidence = [log.address, ...(log.topics || []), log.data].filter(Boolean).join(" ").toLowerCase();
+      return evidence.includes(addressLower) || evidence.includes(addressHex);
+    });
     const code = await rpc("eth_getCode", [address, "latest"]);
     if (!transactionReferencesToken || !code || code === "0x") return json({ error: "Token address could not be verified against the confirmed transaction" }, 400);
 
