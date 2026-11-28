@@ -152,8 +152,8 @@ function PrivyPortfolioPanelContent({onClose}){
     return()=>{active=false;controller.abort()};
   },[ready,authenticated,address,network,refreshTick]);
   useEffect(()=>{
-    if(!ready||!authenticated||!address){setTokenBalances({});return;}
-    const controller=new AbortController();let active=true;setTokensLoading(true);
+    if(!ready||!authenticated||!address){setTokenBalances({});setTokensLoading(false);return;}
+    let active=true;setTokensLoading(true);setTokenBalances({});
     const list=trackedTokens.filter(item=>item.network===network);
     Promise.all(list.map(async token=>{
       try{
@@ -162,7 +162,7 @@ function PrivyPortfolioPanelContent({onClose}){
         return [token.address.toLowerCase(),{value:formatTokenUnits(raw,token.decimals),error:''}];
       }catch(error){return [token.address.toLowerCase(),{value:'—',error:error.message||'Balance unavailable'}]}
     })).then(entries=>{if(active)setTokenBalances(Object.fromEntries(entries))}).finally(()=>{if(active)setTokensLoading(false)});
-    return()=>{active=false;controller.abort()};
+    return()=>{active=false};
   },[ready,authenticated,address,network,refreshTick,trackedTokens]);
   const addPortfolioToken=async()=>{
     const tokenAddress=tokenAddressInput.trim();
