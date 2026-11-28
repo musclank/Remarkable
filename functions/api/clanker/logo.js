@@ -1,7 +1,7 @@
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'public, max-age=300','Access-Control-Allow-Origin':'*'}});
 const ADDRESS=/^0x[a-fA-F0-9]{40}$/;
 const addressOf=value=>String(value?.address||value?.contract_address||value?.tokenAddress||value?.token_address||value?.contractAddress||value?.token?.address||value?.token?.contract_address||value?.baseToken?.address||'').toLowerCase();
-const imageFields=['image','imageUrl','image_url','imageUri','image_uri','icon','logo','logoUrl','logo_url','tokenImage','token_image','avatar','metadataImage','metadata_image'];
+const imageFields=['image','imageUrl','imageURL','image_url','imageUri','imageURI','image_uri','img','imgUrl','img_url','icon','iconUrl','icon_url','logo','logoUrl','logo_url','tokenImage','tokenImageUrl','token_image','avatar','metadataImage','metadata_image'];
 const collectImages=(value,out=[],depth=0)=>{
  if(!value||depth>8)return out;
  if(typeof value==='string'){if(/^(https?:\/\/|ipfs:\/\/|data:image\/)/i.test(value.trim()))out.push(value.trim());return out}
@@ -37,15 +37,26 @@ export async function onRequest({request}){
    if(!response.ok)continue;
    const payload=await response.json();
    const images=findMatchingImages(payload,normalized);
-   if(images.length)return json({image:resolveGateway(images[0]),source:'clanker-api'});
+   for(const candidate of images){
+    const resolved=resolveGateway(candidate);
+    if(/\\.(?:json|metadata)(?:[?#]|$)/i.test(resolved)){
+     try{const metaResponse=await fetch(resolved,{headers:{Accept:'application/json'}});if(metaResponse.ok){const metadata=await metaResponse.json();const nested=collectImages(metadata);if(nested.length)return json({image:resolveGateway(nested[0]),source:'clanker-token-metadata'});}}catch{}
+    }else return json({image:resolved,source:'clanker-api'});
+   }
   }catch{}
  }
  try{
   const page=await fetch('https://www.clanker.world/clanker/'+address,{headers:{Accept:'text/html','User-Agent':'Remarkable-Token-Explorer/1.0'}});
   if(page.ok){
    const html=await page.text();
-   const meta=html.match(/<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)["'][^>]+content=["']([^"']+)["']/i)||html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](?:og:image|twitter:image)["']/i);
-   if(meta?.[1])return json({image:resolveGateway(meta[1]),source:'clanker-page'});
+   const tags=html.match(/<meta\\b[^>]*>/gi)||[];
+   for(const tag of tags){
+    const property=(tag.match(/(?:property|name)=["']([^"']+)["']/i)||[])[1]||'';
+    const value=(tag.match(/content=["']([^"']+)["']/i)||[])[1]||'';
+    if(/^(?:og:image|twitter:image)$/i.test(property)&&value&&/^https?:\\/\\//i.test(value))return json({image:value.replace(/&amp;/g,'&'),source:'clanker-page-meta'});
+   }
+   const embedded=html.match(/(?:imageUrl|image_url|imageURI|image_uri|tokenImage|logoUrl|logo_url)["']?\\s*[:=]\\s*["'](https?:\\/\\/[^"'\\\\ ]+|ipfs:\\/\\/[^"'\\\\ ]+)/gi)||[];
+   for(const entry of embedded){const value=entry.match(/(https?:\\/\\/[^"'\\\\ ]+|ipfs:\\/\\/[^"'\\\\ ]+)/i)?.[1];if(value)return json({image:resolveGateway(value.replace(/\\\\u0026/g,'&')),source:'clanker-page-data'});}
   }
  }catch{}
  return json({image:'',source:'clanker',message:'Clanker did not return a public logo for this token'},404);
