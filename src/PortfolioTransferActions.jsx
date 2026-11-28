@@ -30,12 +30,37 @@ export default function PortfolioTransferActions({address,network,networks,walle
   const [txHash,setTxHash]=useState('');
   const [copied,setCopied]=useState(false);
   const [fee,setFee]=useState('');
+  const [available,setAvailable]=useState(null);
+  const [balanceLoading,setBalanceLoading]=useState(false);
   const tokens=useMemo(()=>trackedTokens.filter(item=>item.network===network),[trackedTokens,network]);
   const selectedToken=tokens.find(item=>item.address.toLowerCase()===asset);
   const native=asset==='native';
   const symbol=native?(networks[network]?.symbol||'ETH'):(selectedToken?.symbol||'TOKEN');
   const explorer=TRANSFER_NETWORKS[network]?.explorer||TRANSFER_NETWORKS.base.explorer;
-  useEffect(()=>{setAsset('native');setFee('');setError('');setTxHash('')},[network]);
+  useEffect(()=>{setAsset('native');setFee('');setError('');setTxHash('');setAmount('');setAvailable(null)},[network]);
+  useEffect(()=>{
+    if(mode!=='send'||!address||!TRANSFER_RPCS[network]){setAvailable(null);return}
+    let cancelled=false;setBalanceLoading(true);setAvailable(null);
+    (async()=>{
+      try{
+        let raw,decimals=selectedToken?.decimals??18;
+        if(native){raw=await rpc(network,'eth_getBalance',[address,'latest']);
+          const price=BigInt(await rpc(network,'eth_gasPrice',[]));
+          const reserve=price*21000n;
+          const balance=BigInt(raw);raw=hexQuantity(balance>reserve?balance-reserve:0n);
+        }else{raw=await rpc(network,'eth_call',[{to:selectedToken.address,data:'0x70a08231'+address.slice(2).toLowerCase().padStart(64,'0')},'latest']);}
+        if(!cancelled)setAvailable({units:BigInt(raw),decimals});
+      }catch{if(!cancelled)setAvailable(null)}finally{if(!cancelled)setBalanceLoading(false)}
+    })();
+    return()=>{cancelled=true}
+  },[mode,address,network,asset,native,selectedToken]);
+  const choosePercent=percent=>{
+    if(!available)return;
+    const units=available.units*BigInt(percent)/100n;
+    const base=10n**BigInt(available.decimals);
+    const whole=units/base;const fraction=(units%base).toString().padStart(available.decimals,'0').replace(/0+$/,'');
+    setAmount(fraction?whole.toString()+'.'+fraction:whole.toString());
+  };
   const receiveCopy=async()=>{try{await navigator.clipboard.writeText(address);setCopied(true);setTimeout(()=>setCopied(false),1600)}catch{setError('Copy failed. Select and copy your wallet address manually')}};
   const send=async()=>{
     setError('');setTxHash('');
@@ -80,6 +105,8 @@ export default function PortfolioTransferActions({address,network,networks,walle
       <label>ASSET<select value={asset} onChange={e=>{setAsset(e.target.value);setFee('')}}><option value="native">{networks[network]?.symbol} · Native</option>{tokens.map(token=><option key={token.address} value={token.address.toLowerCase()}>{token.symbol} · Token</option>)}</select></label>
       <label>RECIPIENT ADDRESS<input value={recipient} onChange={e=>setRecipient(e.target.value)} placeholder="0x…" autoComplete="off" spellCheck="false"/></label>
       <label>AMOUNT ({symbol})<input inputMode="decimal" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="0.00"/></label>
+      <div className="portfolio-transfer-percent" aria-label="Choose percentage of available balance">{[10,20,30,40,50,60,70,80,90,100].map(percent=><button key={percent} type="button" disabled={!available||balanceLoading} onClick={()=>choosePercent(percent)}>{percent}%</button>)}</div>
+      <div className="portfolio-transfer-balance">{balanceLoading?'Loading available balance…':available?`Available: ${(Number(available.units)/10**available.decimals).toLocaleString(undefined,{maximumFractionDigits:6})} ${symbol}`:'Available balance unavailable'}</div>
       {fee&&<div className="portfolio-transfer-fee">Estimated network fee <strong>{fee}</strong></div>}
       <p className="portfolio-transfer-safe"><ShieldCheck size={14}/> Review the address, network and amount carefully. Your wallet will ask you to approve the transaction.</p>
       {error&&<p className="portfolio-transfer-error" role="alert">{error}</p>}
