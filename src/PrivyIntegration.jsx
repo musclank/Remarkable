@@ -11,7 +11,7 @@ export function PrivyAppProvider({appId,children}){
   }}>{children}</PrivyProvider>;
 }
 
-export function PrivyLaunchModal({onClose}){
+export function PrivyLaunchModal({onClose,onRegistered}){
   const {ready,authenticated,login,user}=usePrivy();
   const {wallets,ready:walletsReady}=useWallets();
   const {createWallet}=useCreateWallet();
@@ -36,7 +36,7 @@ export function PrivyLaunchModal({onClose}){
     const provider=await wallet.getEthereumProvider();
     return {wallet,provider};
   };
-  return <LaunchModal onClose={onClose} privyConnect={connect}/>;
+  return <LaunchModal onClose={onClose} privyConnect={connect} onRegistered={onRegistered}/>;
 }
 
 export function PrivyWalletPanel({onClose}){
