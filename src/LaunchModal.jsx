@@ -182,7 +182,23 @@ export default function LaunchModal({onClose,privyConnect}){
       const result=await submission.waitForTransaction();
       if(result.error)throw result.error;
       setTokenAddress(result.address);
-      setStatus('Token deployed and confirmed on Base.');
+      setStatus('Token deployed and confirmed on Base. Registering in Token Explorer…');
+      try {
+        const registryResponse = await fetch('/api/tokens/registry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chainId: 8453, address: result.address, txHash: submittedHash,
+            name: name.trim(), symbol: symbol.trim().toUpperCase(),
+            imageUri, description: description.trim(), website: website.trim(), social: social.trim()
+          })
+        });
+        const registryBody = await registryResponse.json().catch(() => ({}));
+        if (!registryResponse.ok) throw new Error(registryBody?.error || 'Registry is not configured yet.');
+        setStatus('Token deployed, confirmed, and added to Recently Launched.');
+      } catch (registryError) {
+        setStatus('Token deployed and confirmed. Registry save pending: ' + (registryError?.message || 'not available'));
+      }
       setStep('success');
     }catch(err){
       const message=err?.shortMessage||err?.message||String(err);
