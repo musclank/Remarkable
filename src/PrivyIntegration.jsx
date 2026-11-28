@@ -48,7 +48,7 @@ export function PrivyWalletPanel({onClose}){
   const [tokenAddressInput,setTokenAddressInput]=useState('');
   const [tokenAdding,setTokenAdding]=useState(false);
   const [tokenError,setTokenError]=useState('');
-  const [trackedTokens,setTrackedTokens]=useState(()=>{try{return JSON.parse(localStorage.getItem('remarkable-portfolio-tokens')||'[]')}catch{return []}});
+  const [trackedTokens,setTrackedTokens]=useState(()=>{try{const saved=JSON.parse(localStorage.getItem('remarkable-portfolio-tokens')||'[]');if(!Array.isArray(saved))return [];return saved.filter(item=>item&&typeof item==='object'&&['ethereum','base','bsc'].includes(item.network)&&typeof item.address==='string'&&/^0x[a-fA-F0-9]{40}$/.test(item.address)&&typeof item.symbol==='string'&&Number.isInteger(item.decimals)&&item.decimals>=0&&item.decimals<=36)}catch{return []}});
   const [tokenBalances,setTokenBalances]=useState({});
   const [tokensLoading,setTokensLoading]=useState(false);
   useEffect(()=>{try{localStorage.setItem('remarkable-portfolio-tokens',JSON.stringify(trackedTokens))}catch{}},[trackedTokens]);
@@ -117,7 +117,7 @@ function formatTokenUnits(raw,decimals){
   return whole.toString()+(fraction?'.'+fraction:'');
 }
 
-export function PrivyPortfolioPanel({onClose}){
+function PrivyPortfolioPanelContent({onClose}){
   const {ready,authenticated,user,login}=usePrivy();
   const {wallets}=useWallets();
   const [network,setNetwork]=useState('base'),[refreshTick,setRefreshTick]=useState(0),[balance,setBalance]=useState(''),[loading,setLoading]=useState(false),[error,setError]=useState('');
@@ -175,4 +175,20 @@ export function PrivyPortfolioPanel({onClose}){
   const removePortfolioToken=token=>setTrackedTokens(items=>items.filter(item=>!(item.network===token.network&&item.address.toLowerCase()===token.address.toLowerCase())));
   const short=value=>value?value.slice(0,6)+'…'+value.slice(-4):'';
   return <div className="privy-portfolio-panel"><div className="modal-icon"><Wallet size={24}/></div><div className="eyebrow"><span className="live-dot"/> MY PORTFOLIO</div><h3>Your onchain<br/><em>balance.</em></h3><p className="swap-intro">Read-only wallet balance. This panel never requests permission to move your funds.</p>{!ready?<div className="launch-status">Initializing wallet…</div>:!authenticated?<><p className="portfolio-empty">Connect your Privy wallet to view your native balance.</p><button className="primary-cta launch-next" onClick={()=>login()}>Connect wallet <ArrowUpRight size={16}/></button></>:<><div className="portfolio-wallet-address"><small>WALLET ADDRESS</small><strong>{short(address)}</strong><div className="portfolio-address-actions"><button type="button" onClick={copyPortfolioAddress}><>{addressCopied?<Check size={13}/>:<Copy size={13}/>} {addressCopied?'Copied':'Copy address'}</></button><a href={explorerUrl} target="_blank" rel="noreferrer"><ExternalLink size={13}/> View on explorer</a></div></div><label className="portfolio-network">NETWORK<select value={network} onChange={event=>setNetwork(event.target.value)}>{Object.entries(networks).map(([key,item])=><option key={key} value={key}>{item.name}</option>)}</select></label><div className="portfolio-balance"><small>NATIVE BALANCE · {networks[network].symbol}</small><strong>{loading?'Loading…':balance?Number(balance).toLocaleString(undefined,{maximumFractionDigits:6}):'—'} <em>{networks[network].symbol}</em></strong><span>{loading?'Reading balance from public RPC':error||'Live onchain balance · read-only'}</span><button type="button" className="portfolio-refresh" onClick={()=>setRefreshTick(value=>value+1)} disabled={loading}><RefreshCw size={13} className={loading?'spin':''}/> {loading?'Refreshing…':'Refresh balance'}</button></div>{error&&<button className="how-secondary" onClick={()=>setRefreshTick(value=>value+1)}>Try again</button>}<section className="portfolio-token-section"><div className="portfolio-token-heading"><strong>ERC-20 TOKENS</strong><span>{trackedTokens.filter(item=>item.network===network).length} tracked</span></div><form className="portfolio-token-add" onSubmit={event=>{event.preventDefault();addPortfolioToken()}}><input value={tokenAddressInput} onChange={event=>setTokenAddressInput(event.target.value)} placeholder="Token contract address" aria-label="ERC-20 token contract address" autoComplete="off"/><button type="submit" disabled={tokenAdding||!tokenAddressInput.trim()}>{tokenAdding?'Checking…':'Add token'}</button></form>{tokenError&&<p className="portfolio-token-error" role="alert">{tokenError}</p>}{tokensLoading&&<p className="portfolio-token-note">Loading token balances…</p>}{trackedTokens.filter(item=>item.network===network).length===0&&!tokensLoading&&<p className="portfolio-token-note">Add an ERC-20 contract address to track its balance on this network.</p>}<div className="portfolio-token-list">{trackedTokens.filter(item=>item.network===network).map(token=><div className="portfolio-token-row" key={token.network+token.address}><div><strong>{token.symbol}</strong><small>{short(token.address)}</small>{tokenBalances[token.address.toLowerCase()]?.error&&<small className="portfolio-token-error">{tokenBalances[token.address.toLowerCase()].error}</small>}</div><strong>{tokensLoading?'…':tokenBalances[token.address.toLowerCase()]?.value??'—'} <em>{token.symbol}</em></strong><button type="button" aria-label={'Remove '+token.symbol} onClick={()=>removePortfolioToken(token)}><X size={13}/></button></div>)}</div><p className="portfolio-token-note">Balances are read directly from the selected chain. Token prices and USD valuation are not included.</p></section></>}<button className="swap-cancel" onClick={onClose}><X size={14}/> Close</button></div>;
+}
+
+
+class PortfolioErrorBoundary extends React.Component{
+  constructor(props){super(props);this.state={hasError:false};}
+  static getDerivedStateFromError(){return {hasError:true};}
+  componentDidCatch(error){console.error('Portfolio panel render error:',error);}
+  retry=()=>this.setState({hasError:false});
+  render(){
+    if(this.state.hasError)return <div className="privy-portfolio-panel"><div className="eyebrow">PORTFOLIO TEMPORARILY UNAVAILABLE</div><p className="portfolio-empty">The portfolio panel encountered an error. Your wallet and funds are not affected. Try reopening or retrying this panel.</p><button className="primary-cta launch-next" onClick={this.retry}>Try again <RefreshCw size={15}/></button><button className="swap-cancel" onClick={this.props.onClose}><X size={14}/> Close</button></div>;
+    return this.props.children;
+  }
+}
+
+export function PrivyPortfolioPanel({onClose}){
+  return <PortfolioErrorBoundary onClose={onClose}><PrivyPortfolioPanelContent onClose={onClose}/></PortfolioErrorBoundary>;
 }
