@@ -515,3 +515,33 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
  .token-modal .full-cta{min-height:42px;padding:11px 12px}
 }
 @media(max-width:360px){.token-modal .detail-metrics small{font-size:6px}.token-modal .detail-metrics strong{font-size:10px}.token-modal .detail-heading h3{font-size:17px}}
+
+/* Portfolio send and receive */
+.portfolio-transfer{margin:14px 0 20px}
+.portfolio-transfer-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.portfolio-transfer-actions>button{display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #35414c;border-radius:9px;background:#151e27;color:#e9edf0;padding:13px;font-size:12px;font-weight:700}
+.portfolio-transfer-actions>button svg{color:var(--acid)}
+.portfolio-transfer-actions>button:hover{border-color:var(--acid);background:#19251d}
+.portfolio-transfer-card{margin-top:12px;border:1px solid #293541;border-radius:11px;background:#0b121a;padding:16px;text-align:left}
+.portfolio-transfer-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;margin-bottom:13px}
+.portfolio-transfer-title>svg{color:var(--acid)}
+.portfolio-transfer-title button{margin-left:auto;border:0;background:transparent;color:#8e98a4;font-size:22px;line-height:1;padding:0 3px}
+.portfolio-transfer-card>p{font-size:10px;line-height:1.7;color:#8f9aa5;margin:0 0 13px}
+.portfolio-transfer-card>p strong{color:#dce3e8}
+.portfolio-transfer-card>label{display:grid;gap:7px;margin:12px 0;font:9px 'DM Mono',monospace;color:#778390;letter-spacing:.06em}
+.portfolio-transfer-card>label input,.portfolio-transfer-card>label select{width:100%;min-width:0;border:1px solid #2b3743;border-radius:8px;background:#111a23;color:#f4f6f8;padding:12px;font:11px 'DM Mono',monospace;outline:none}
+.portfolio-transfer-card>label input:focus,.portfolio-transfer-card>label select:focus{border-color:var(--acid)}
+.portfolio-transfer-card>label select option{background:#111a23}
+.portfolio-receive-qr{display:block;width:180px;height:180px;object-fit:contain;border-radius:10px;background:#fff;padding:9px;margin:16px auto}
+.portfolio-receive-address{display:block;font:10px 'DM Mono',monospace;color:#b9c3cd;overflow-wrap:anywhere;text-align:center;margin:10px 0 14px}
+.portfolio-transfer-primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:8px;background:var(--acid);color:#10160b;padding:12px;font-size:11px;font-weight:800}
+.portfolio-transfer-primary:disabled{opacity:.5;cursor:not-allowed}
+.portfolio-transfer-fee{display:flex;justify-content:space-between;gap:12px;color:#8d98a4;font-size:10px;padding:10px 0}
+.portfolio-transfer-fee strong{color:#e3e8ed;font-family:'DM Mono',monospace}
+.portfolio-transfer-safe{display:flex;align-items:flex-start;gap:7px!important;margin:10px 0!important;font-size:9px!important}
+.portfolio-transfer-safe svg{flex:none;color:var(--acid);margin-top:2px}
+.portfolio-transfer-error{color:#ff9c9c!important;background:#ff686810;border:1px solid #ff68682b;border-radius:7px;padding:9px}
+.portfolio-transfer-success{display:grid;gap:8px;color:var(--acid);font-size:11px;margin:10px 0}
+.portfolio-transfer-success a{display:flex;align-items:center;gap:5px;color:#c9d2dc;font-size:10px}
+.portfolio-transfer-success small{font:9px 'DM Mono',monospace;color:#7f8a96;overflow-wrap:anywhere}
+@media(max-width:640px){.portfolio-transfer-card{padding:13px}.portfolio-transfer-actions>button{padding:12px 8px;font-size:11px}.portfolio-receive-qr{width:160px;height:160px}}
