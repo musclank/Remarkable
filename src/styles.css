@@ -475,3 +475,43 @@ footer .brand-mark .remarkable-mascot{width:27px;height:27px}
 
 .ecosystem-avatar{object-fit:cover;overflow:hidden}
 .ecosystem-avatar-fallback{display:none}
+
+/* Token detail modal: isolate scrolling from the page behind it, especially on touch devices */
+.modal-backdrop{display:flex;align-items:center;justify-content:center;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom))}
+.modal{flex:0 0 auto;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#34414d transparent}
+.token-modal{width:min(100%,520px);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);padding:clamp(16px,3.5vw,28px)}
+.token-modal .modal-close{position:sticky;float:right;top:0;right:0;z-index:3;margin:-4px -4px 0 8px;background:#101720e8;border:1px solid #ffffff14;border-radius:8px;width:32px;height:32px;display:grid;place-items:center}
+.token-modal .detail-heading{clear:both}
+.token-modal .detail-chart{min-width:0;overflow:hidden}
+.token-modal .embedded-market-chart{width:100%;min-width:0;overflow:hidden;border-radius:9px}
+.token-modal .embedded-market-chart iframe{display:block;width:100%;height:clamp(250px,42vh,390px);border:0;background:#080d14}
+.token-modal .dex-live-meta{gap:8px 12px}
+.token-modal .dex-live-meta a{margin-left:0}
+@media(max-width:640px){
+ .modal-backdrop{align-items:flex-start;padding:10px;padding-top:max(10px,env(safe-area-inset-top));padding-bottom:max(10px,env(safe-area-inset-bottom))}
+ .token-modal{width:100%;max-width:560px;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);border-radius:14px;padding:15px 14px}
+ .token-modal .detail-heading{gap:10px;padding-right:0}
+ .token-modal .detail-heading .token-icon{width:42px;height:42px;font-size:22px}
+ .token-modal .detail-heading .eyebrow{font-size:8px;letter-spacing:.1em;overflow-wrap:anywhere}
+ .token-modal .detail-heading h3{font-size:clamp(17px,5vw,21px);overflow-wrap:anywhere}
+ .token-modal .detail-heading h3 em{font-size:12px}
+ .token-modal .detail-description{font-size:11px;margin:12px 0 14px}
+ .token-modal .detail-metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+ .token-modal .detail-metrics>div{padding:9px 7px;gap:6px}
+ .token-modal .detail-metrics small{font-size:7px;letter-spacing:0}
+ .token-modal .detail-metrics strong{font-size:clamp(10px,3.2vw,13px);overflow-wrap:anywhere}
+ .token-modal .detail-chart{margin:13px 0 12px;padding:10px 9px 5px}
+ .token-modal .detail-chart .eyebrow{font-size:8px;letter-spacing:.08em}
+ .token-modal .live-price-chart{padding:9px;margin-top:10px}
+ .token-modal .embedded-market-chart iframe{height:300px}
+ .token-modal .dex-trade-stats{grid-template-columns:1fr 1fr;gap:6px}
+ .token-modal .trade-period{padding:8px}
+ .token-modal .trade-period>div{flex-wrap:wrap;justify-content:flex-start;gap:5px 9px}
+ .token-modal .trade-buy,.token-modal .trade-sell{font-size:8px}
+ .token-modal .trade-buy b,.token-modal .trade-sell b{font-size:12px}
+ .token-modal .detail-address{align-items:flex-start;padding:9px}
+ .token-modal .detail-address strong{font-size:9px;word-break:break-all}
+ .token-modal .detail-warning{font-size:9px;margin:10px 0}
+ .token-modal .full-cta{min-height:42px;padding:11px 12px}
+}
+@media(max-width:360px){.token-modal .detail-metrics small{font-size:6px}.token-modal .detail-metrics strong{font-size:10px}.token-modal .detail-heading h3{font-size:17px}}
