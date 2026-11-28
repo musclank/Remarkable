@@ -3,22 +3,3 @@
 
 .portfolio-token-section{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid #28343f;border-radius:10px;background:#0c141c}.portfolio-token-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.portfolio-token-heading strong{font:10px 'DM Mono',monospace;letter-spacing:.08em;color:#dce4e8}.portfolio-token-heading span{font:10px 'DM Mono',monospace;color:#7f8a96}.portfolio-token-add{display:flex;gap:7px;min-width:0}.portfolio-token-add input{min-width:0;flex:1;height:39px;padding:0 10px;border:1px solid #2b3742;border-radius:7px;background:#101923;color:#edf2f5;font:10px 'DM Mono',monospace;outline:none}.portfolio-token-add input:focus{border-color:#b5ff6d66}.portfolio-token-add button{flex-shrink:0;padding:0 11px;border:1px solid #b5ff6d44;border-radius:7px;background:#b5ff6d12;color:#b5ff6d;font:10px 'DM Mono',monospace;cursor:pointer}.portfolio-token-add button:disabled{opacity:.5;cursor:not-allowed}.portfolio-token-list{display:flex;flex-direction:column;gap:8px}.portfolio-token-row{display:grid;grid-template-columns:minmax(0,1fr) auto 28px;align-items:center;gap:8px;padding:10px;border:1px solid #26323d;border-radius:8px;background:#101923}.portfolio-token-row>div{display:flex;flex-direction:column;gap:4px;min-width:0}.portfolio-token-row>div>strong{font:11px 'DM Mono',monospace;color:#e4ebef}.portfolio-token-row small{font:9px 'DM Mono',monospace;color:#71808c;overflow-wrap:anywhere}.portfolio-token-row>strong{font:11px 'DM Mono',monospace;color:#e4ebef;text-align:right;overflow-wrap:anywhere}.portfolio-token-row>strong em{font-style:normal;color:#b5ff6d;font-size:9px}.portfolio-token-row>button{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid #2b3742;border-radius:6px;background:#151f29;color:#84919b;cursor:pointer}.portfolio-token-row>button:hover{color:#ff8c8c;border-color:#ff8c8c55}.portfolio-token-note,.portfolio-token-error{margin:0;font-size:10px;line-height:1.5;color:#778591}.portfolio-token-error{color:#ff9b9b}.portfolio-token-row .portfolio-token-error{margin-top:2px}@media(max-width:420px){.portfolio-token-section{padding:11px}.portfolio-token-add{flex-direction:column}.portfolio-token-add button{min-height:36px}.portfolio-token-row{grid-template-columns:minmax(0,1fr) auto 26px;gap:5px}.portfolio-token-row>strong{font-size:10px}}
 
-
-.recent-trades{margin-top:18px;padding:16px;border:1px solid rgba(190,255,130,.12);border-radius:16px;background:rgba(9,16,13,.58)}
-.recent-trades-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-.recent-trades-heading small{display:block;color:#9ee76a;font-size:10px;font-weight:800;letter-spacing:.14em}
-.recent-trades-heading h4{margin:5px 0 0;color:#f2f8ec;font-size:16px;font-weight:700}
-.recent-trades-heading>span{color:#82917d;font-size:9px;font-weight:800;letter-spacing:.08em}
-.recent-trades-list{display:grid;gap:4px}
-.recent-trade-row{display:grid;grid-template-columns:48px minmax(58px,1fr) minmax(70px,1fr) auto 14px;align-items:center;gap:10px;min-height:40px;padding:7px 8px;border-radius:9px;color:#dce6d8;text-decoration:none;background:rgba(255,255,255,.025);font-size:12px}
-.recent-trade-row:hover{background:rgba(185,255,125,.07)}
-.recent-trade-type{font-size:10px;font-weight:800;letter-spacing:.04em}
-.recent-trade-type.buy{color:#a8ef70}
-.recent-trade-type.sell{color:#ff8d8d}
-.recent-trade-value{font-weight:700;font-variant-numeric:tabular-nums}
-.recent-trade-wallet{color:#8d9b88;font-family:ui-monospace,monospace;font-size:11px}
-.recent-trade-row time{color:#8d9b88;font-size:11px;font-variant-numeric:tabular-nums}
-.recent-trade-row svg{color:#71816c}
-.recent-trades-empty{margin:0;padding:14px 8px;color:#9aa697;font-size:12px}
-.recent-trades-footnote{margin:10px 0 0;color:#788675;font-size:10px;line-height:1.5}
-@media(max-width:520px){.recent-trades{padding:12px}.recent-trade-row{grid-template-columns:42px minmax(50px,1fr) minmax(54px,1fr) auto;gap:7px;font-size:11px}.recent-trade-row time{font-size:10px}.recent-trade-row svg{display:none}.recent-trade-wallet{font-size:10px}}
